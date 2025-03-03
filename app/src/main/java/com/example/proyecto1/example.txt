@@ -1,0 +1,203 @@
+package com.example.proyecto1;
+
+package com.example.clickergame;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import java.util.List;
+
+public class MainActivity2 extends AppCompatActivity {
+    private TextView scoreTextView;
+    private Button clickButton;
+    private RecyclerView recyclerView;
+    private UpgradeAdapter adapter;
+    private int score = 0;
+    private UpgradeDatabase database;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // Inicializa los elementos de la UI
+        scoreTextView = findViewById(R.id.scoreTextView);
+        clickButton = findViewById(R.id.clickButton);
+        recyclerView = findViewById(R.id.recyclerView);
+
+        // Configura RecyclerView con un LinearLayoutManager
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new UpgradeAdapter(this::showUpgradeDialog);
+        recyclerView.setAdapter(adapter);
+
+        // Inicializa la base de datos Room y obtiene las mejoras guardadas
+        database = Room.databaseBuilder(getApplicationContext(), UpgradeDatabase.class, "upgrade_db").allowMainThreadQueries().build();
+        adapter.setUpgrades(database.upgradeDao().getAllUpgrades());
+
+        // Maneja el botón de clic para aumentar la puntuación
+        clickButton.setOnClickListener(v -> {
+            score++;
+            scoreTextView.setText("Puntos: " + score);
+            if (score == 10) sendNotification(); // Envía una notificación al alcanzar 10 puntos
+        });
+    }
+
+    // Método para enviar una notificación local cuando el usuario alcanza 10 puntos
+    private void sendNotification() {
+        String channelId = "game_channel";
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel notificationChannel = new NotificationChannel(channelId, "Game Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+        notificationManager.createNotificationChannel(notificationChannel);
+
+        NotificationCompat.Builder notification = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("¡Felicidades!")
+                .setContentText("Has alcanzado 10 puntos!")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(1, notification.build());
+    }
+
+    // Muestra un cuadro de diálogo para comprar mejoras
+    private void showUpgradeDialog(Upgrade upgrade) {
+        new AlertDialog.Builder(this)
+                .setTitle("Comprar mejora")
+                .setMessage("¿Quieres comprar " + upgrade.getName() + " por " + upgrade.getCost() + " puntos?")
+                .setPositiveButton("Comprar", (dialog, which) -> {
+                    if (score >= upgrade.getCost()) {
+                        score -= upgrade.getCost();
+                        scoreTextView.setText("Puntos: " + score);
+                        database.upgradeDao().buyUpgrade(upgrade.getId());
+                        adapter.setUpgrades(database.upgradeDao().getAllUpgrades()); // Actualiza la lista
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+}
+
+// Actividad de menú que al hacer clic en cualquier parte lleva al juego
+public class MenuActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_menu);
+
+        // Detecta clics en toda la pantalla para iniciar el juego
+        View menuView = findViewById(R.id.menuView);
+        menuView.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
+    }
+}
+
+// Definición de la base de datos con Room
+@Database(entities = {Upgrade.class}, version = 1)
+abstract class UpgradeDatabase extends RoomDatabase {
+    public abstract UpgradeDao upgradeDao();
+}
+
+// DAO (Data Access Object) para gestionar la base de datos
+import androidx.room.Dao;
+import androidx.room.Insert;
+import androidx.room.Query;
+import java.util.List;
+
+@Dao
+interface UpgradeDao {
+    @Query("SELECT * FROM upgrade")
+    List<Upgrade> getAllUpgrades();
+
+    @Insert
+    void insertUpgrade(Upgrade upgrade);
+
+    @Query("UPDATE upgrade SET purchased = 1 WHERE id = :upgradeId")
+    void buyUpgrade(int upgradeId);
+}
+
+// Entidad Upgrade, representa una mejora dentro del juego
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity
+class Upgrade {
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+    private String name;
+    private int cost;
+    private boolean purchased;
+
+    public Upgrade(String name, int cost) {
+        this.name = name;
+        this.cost = cost;
+        this.purchased = false;
+    }
+
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public int getCost() { return cost; }
+    public boolean isPurchased() { return purchased; }
+}
+
+// Diseño de la UI en XML
+/* activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/scoreTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Puntos: 0"
+        android:textSize="24sp"/>
+
+    <Button
+        android:id="@+id/clickButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Click!"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
+*/
+
+/* activity_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="#FFCC00">
+
+    <TextView
+        android:id="@+id/menuView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Toca para comenzar"
+        android:textSize="30sp"/>
+</LinearLayout>
+*/
+
