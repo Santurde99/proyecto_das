@@ -95,7 +95,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
     }
 
     public void disable_button(int itemId) {
-        // Buscar el Item en la lista por su ID
         for (int i = 0; i < itemList.size(); i++) {
             Generic_Upgrade upgrade = itemList.get(i);
             if (upgrade.get_id() == itemId) {
@@ -103,6 +102,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
                 upgrade.disable_upgrade(); // Estado bloqueado
 
                 // Notificar al Adapter que el elemento ha cambiado
+
                 notifyItemChanged(i);
                 break;
             }

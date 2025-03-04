@@ -27,6 +27,8 @@ public class Main_Activity extends AppCompatActivity {
     private int click_points = 1;
     private Timer timer;
     private int passive_points = 0;
+    private float pasive_multiplier = 1.0f;
+    private float click_multiplier = 1.0f;
 
     private static final int REQUEST_CODE = 1; // Código de solicitud
 
@@ -62,7 +64,7 @@ public class Main_Activity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        nuggets = nuggets + passive_points;
+                        nuggets = Math.round(nuggets + (passive_points * pasive_multiplier));
                         nuggets_view.setText(String.valueOf(nuggets));
                     }
                 });
@@ -73,9 +75,8 @@ public class Main_Activity extends AppCompatActivity {
         dig_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nuggets = nuggets + click_points;
+                nuggets = Math.round(nuggets + (click_points * click_multiplier));
                 nuggets_view.setText(String.valueOf(nuggets));
-
             }
         });
 
@@ -108,26 +109,31 @@ public class Main_Activity extends AppCompatActivity {
 
         nuggets = nuggets-upgrade.get_price();
         int[] upgrade_info = upgrade.get_upgrade();
-        int[] target_value = new int[1]; //USAMOS UN ARRAY DE 1 POSICION COMO PUNTERO
 
 
         //Comprobamos el objetivo de la mejora
-        if (upgrade_info[1] == 1) {target_value[0] = this.click_points; }
-        else{target_value[0] = this.passive_points;}
-
-        //Comprobamos si va a ser un valor fijo o porcentual y se aplica
-        if (upgrade_info[0] == 0) {
-            target_value[0] = target_value[0] + upgrade.get_upgrade_value();
-        }else{
-            target_value[0] = target_value[0] * upgrade.get_upgrade_value();
+        if (upgrade_info[1] == 1) {
+            if (upgrade_info[0] == 0) {
+                this.click_points += upgrade.get_upgrade_value();
+            } else {
+                float percentage = (float) upgrade.get_upgrade_value() / 100;
+                this.click_multiplier = this.click_multiplier + percentage;
+            }
+        } else {
+            if (upgrade_info[0] == 0) {
+                this.passive_points += upgrade.get_upgrade_value();
+            } else {
+                float percentage = (float) upgrade.get_upgrade_value() / 100;
+                this.pasive_multiplier = this.pasive_multiplier + percentage;
+            }
         }
-
         int[] unlocks = upgrade.get_unlocks(); //Tomamos las ids de las mejoras que desbloquea esta mejora
         for (int num : unlocks){
             Generic_Upgrade temp_upgrade = Data_Load.getDL().get_upgrade_by_id(num);
             temp_upgrade.unlock_upgrade();
         }
-        Toast.makeText(this,": " + click_points ,Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"a" + pasive_multiplier,Toast.LENGTH_SHORT).show();
+
 
     }
 

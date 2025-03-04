@@ -76,10 +76,10 @@ public class Generic_Upgrade {
     public boolean unlock_upgrade(){
         boolean is_available = false;
         this.archived_upgrades++;
-        if ((this.archived_upgrades >= this.required_upgrades) && (status == 1)){
-            this.status = 2;
+        if ((this.archived_upgrades >= this.required_upgrades) && (status == 0)){
+            this.status = 1;
             is_available = true;
-        } else if (status == 2) {
+        } else if (status == 1) {
             is_available = true;
         }
         return is_available;
@@ -96,8 +96,8 @@ public class Generic_Upgrade {
     }
 
     public void disable_upgrade(){
-        if (this.status == 2){
-            this.status = 3;
+        if (this.status == 1){
+            this.status = 2;
         }
     }
 
