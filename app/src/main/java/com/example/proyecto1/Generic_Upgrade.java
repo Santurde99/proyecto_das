@@ -8,10 +8,11 @@ public class Generic_Upgrade {
     private final String description;
     private int status; // 0 = sin desbloquear, 1 = disponible, 2 = comprado
     private final int required_upgrades; //Cantidad de mejoras previas que tienen que desbloquearse
+    private int archived_upgrades; //Cantidad de mejoras obtenidas para el desbloqueo
     private final int image; //Path a su imagen
     private final int price; //Precio de la mejora
     private int[] unlocks; // Ids de mejoras que desbloquea
-    private int upgrade_value;//Valor del valor que da
+    private int upgrade_value;//Valor de la cantidad de mejora que da (ej +3)
     private int kind; //Tipo de mejora, fija = 0 o porcentual = 1
     private int upgrade_target; //Objetivo, pasivo = 0, click = 1, otros = 2-n
 
@@ -29,6 +30,7 @@ public class Generic_Upgrade {
         this.unlocks = unlocks.clone();
         this.kind = kind;
         this.upgrade_target = upgrade_target;
+        this.archived_upgrades = 0;
     }
 
     //Getters
@@ -64,17 +66,17 @@ public class Generic_Upgrade {
         return this.price;
     }
 
-    public Triple get_upgrade(){
-        return new Triple(this.kind,this.upgrade_target,this.upgrade_value);
+    public int[] get_upgrade(){
+        return new int[]{this.kind,this.upgrade_target,this.upgrade_value};
     }
 
     //Metodos generales
     
     //Comprueba si esta disponible para comprar, si se puede activar la activa
-    public boolean unlock_upgrade(int active_upgrades){
+    public boolean unlock_upgrade(){
         boolean is_available = false;
-        active_upgrades++;
-        if ((active_upgrades >= this.required_upgrades) && (status == 1)){
+        this.archived_upgrades++;
+        if ((this.archived_upgrades >= this.required_upgrades) && (status == 1)){
             this.status = 2;
             is_available = true;
         } else if (status == 2) {

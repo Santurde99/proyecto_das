@@ -23,7 +23,7 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
     private Adapter adapter;
     private int nuggets_actual_balance; //VALOR DE NUGGETS AL ABRIR LA TIENDA, ESTE NO SE ACTUALIZA
     private int debt = 0; //Deuda para restar en los puntos al volver a la pestaña original
-    private ArrayList<Generic_Upgrade> bought_upgrades_list;
+    private ArrayList<Integer> bought_upgrades_list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
 
         getOnBackPressedDispatcher().addCallback(this, callback);
 
-        this.nuggets_actual_balance = getIntent().getIntExtra("nuggets", 0);
+        this.nuggets_actual_balance = getIntent().getIntExtra("balance", 0);
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -54,7 +54,7 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
         @Override
         public void handleOnBackPressed() {
             Intent intent = new Intent();
-            intent.putExtra("bought", bought_upgrades_list);
+            intent.putIntegerArrayListExtra("bought", bought_upgrades_list);
             setResult(RESULT_OK, intent);
             finish(); // Cierra la actividad
         }
@@ -69,15 +69,23 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
      */
     @Override
     public void onItemClick(int itemId) {
-
-        Toast.makeText(this, "Botón pulsado - ID: " + itemId, Toast.LENGTH_SHORT).show();
+        System.out.println(itemId);
         Generic_Upgrade upgrade = Data_Load.getDL().get_upgrade_by_id(itemId);
+        System.out.println(upgrade);
         if (upgrade == null){
             Toast.makeText(this,"Error, no existe la mejora con ID: " +itemId,Toast.LENGTH_SHORT).show();
         }else{
-            upgrade.disable_upgrade();
+            if (upgrade.buy_upgrade(nuggets_actual_balance)) {
+                nuggets_actual_balance = nuggets_actual_balance - upgrade.get_price();
+                //Desactivamos la tarjeta
+                adapter.disable_button(itemId);
+                //Añadimos la id de la mejora a la lista de mejoras compradas para tratarla en main
+                this.bought_upgrades_list.add(itemId);
+                Toast.makeText(this, "Se ha comprado la mejora", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "No tienes suficientes pepitas", Toast.LENGTH_SHORT).show();
 
-            bought_upgrades_list.add(upgrade);
+            }
         }
 
     }

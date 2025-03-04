@@ -68,6 +68,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
         Generic_Upgrade currentItem = filteredList.get(position); // Usar la lista filtrada
 
         // Configurar la imagen y la descripción
+        holder.cardView.setTag(currentItem.get_id());
         holder.imageView.setImageResource(currentItem.get_img());
         holder.textView.setText(currentItem.get_description());
 
@@ -92,6 +93,22 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
             }
         });
     }
+
+    public void disable_button(int itemId) {
+        // Buscar el Item en la lista por su ID
+        for (int i = 0; i < itemList.size(); i++) {
+            Generic_Upgrade upgrade = itemList.get(i);
+            if (upgrade.get_id() == itemId) {
+                // Cambiar el estado del Item
+                upgrade.disable_upgrade(); // Estado bloqueado
+
+                // Notificar al Adapter que el elemento ha cambiado
+                notifyItemChanged(i);
+                break;
+            }
+        }
+    }
+
 
 
     @Override
