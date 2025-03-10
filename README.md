@@ -9,10 +9,9 @@ Uso de diálogos. - Confirmaciones
 
 Usar notificaciones locales. - Al alcanzar X cantidad de puntos
 
-Control de la pila de actividades. - 3 actividades principales, controlar la pila
+Control de la pila de actividades. - 3 actividades principales, controlar la pila (Hecho?)
 
 ## Estado actual (TODO)
 
 Hay que:
-- Desactivar opcion de compra al comprar
-- Aplicar las mejoras en el Main Activity
+

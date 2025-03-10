@@ -70,7 +70,7 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
     @Override
     public void onItemClick(int itemId) {
         System.out.println(itemId);
-        Generic_Upgrade upgrade = Data_Load.getDL().get_upgrade_by_id(itemId);
+        Generic_Upgrade upgrade = Data_Load.getDL(null).get_upgrade_by_id(itemId);
         System.out.println(upgrade);
         if (upgrade == null){
             Toast.makeText(this,"Error, no existe la mejora con ID: " +itemId,Toast.LENGTH_SHORT).show();

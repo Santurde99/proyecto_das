@@ -105,7 +105,7 @@ public class Main_Activity extends AppCompatActivity {
     }
 
     private void apply_upgrades(int id){
-        Generic_Upgrade upgrade = Data_Load.getDL().get_upgrade_by_id(id);
+        Generic_Upgrade upgrade = Data_Load.getDL(null).get_upgrade_by_id(id);
 
         nuggets = nuggets-upgrade.get_price();
         int[] upgrade_info = upgrade.get_upgrade();
@@ -127,12 +127,7 @@ public class Main_Activity extends AppCompatActivity {
                 this.pasive_multiplier = this.pasive_multiplier + percentage;
             }
         }
-        int[] unlocks = upgrade.get_unlocks(); //Tomamos las ids de las mejoras que desbloquea esta mejora
-        for (int num : unlocks){
-            Generic_Upgrade temp_upgrade = Data_Load.getDL().get_upgrade_by_id(num);
-            temp_upgrade.unlock_upgrade();
-        }
-        Toast.makeText(this,"a" + pasive_multiplier,Toast.LENGTH_SHORT).show();
+        //Debug//Toast.makeText(this,"a" + pasive_multiplier,Toast.LENGTH_SHORT).show();
 
 
     }
