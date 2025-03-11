@@ -20,7 +20,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
     private OnItemClickListener listener; // Interfaz para manejar el clic en el boton y pasar el evento a la actividad
 
     public Adapter() {
-        this.itemList = Data_Load.getDL(null).get_upgrade_list();
+        this.itemList = Data_Load.getDL().get_upgrade_list();
         this.filteredList = new ArrayList<>();
         //Generar lista filtrada
         filter_list();
@@ -93,11 +93,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
 
     public void disable_button(int itemId) {
         // Buscar el Item en la lista por su ID
-        Data_Load.getDL(null).get_upgrade_by_id(itemId).disable_upgrade();
+        Data_Load.getDL().get_upgrade_by_id(itemId).disable_upgrade();
 
-        int[] unlocks = Data_Load.getDL(null).get_upgrade_by_id(itemId).get_unlocks(); //Tomamos las ids de las mejoras que desbloquea esta mejora
+        int[] unlocks = Data_Load.getDL().get_upgrade_by_id(itemId).get_unlocks(); //Tomamos las ids de las mejoras que desbloquea esta mejora
         for (int num : unlocks){
-            Generic_Upgrade temp_upgrade = Data_Load.getDL(null).get_upgrade_by_id(num);
+            Generic_Upgrade temp_upgrade = Data_Load.getDL().get_upgrade_by_id(num);
             temp_upgrade.unlock_upgrade();
         }
         // Refiltrar la lista

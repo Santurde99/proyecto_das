@@ -105,7 +105,7 @@ public class Main_Activity extends AppCompatActivity {
     }
 
     private void apply_upgrades(int id){
-        Generic_Upgrade upgrade = Data_Load.getDL(null).get_upgrade_by_id(id);
+        Generic_Upgrade upgrade = Data_Load.getDL().get_upgrade_by_id(id);
 
         nuggets = nuggets-upgrade.get_price();
         int[] upgrade_info = upgrade.get_upgrade();

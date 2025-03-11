@@ -5,6 +5,36 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Menu_activity">
+    android:background="@drawable/menu_cut"
+    tools:context=".Menu_activity"
+    tools:ignore="ExtraText">
+
+    <!-- TextView con texto grande, negro y reborde blanco -->
+    <TextView
+        android:id="@+id/main_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Toca para entrar a la mina"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" /> <!-- Color de texto negro -->
+        android:shadowColor="#FFFFFF" <!-- Color del contorno (blanco) -->
+        android:shadowDx="-2" <!-- Desplazamiento horizontal -->
+        android:shadowDy="-2" <!-- Desplazamiento vertical -->
+        android:shadowRadius="3" <!-- Grosor del contorno -->
+        android:background="@android:color/transparent"
+        android:padding="10dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:fontFamily="sans-serif"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+    />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

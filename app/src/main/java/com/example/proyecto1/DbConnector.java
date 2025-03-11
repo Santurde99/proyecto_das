@@ -1,19 +1,20 @@
 package com.example.proyecto1;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
 
-public class Database extends SQLiteOpenHelper {
+public class DbConnector extends SQLiteOpenHelper {
 
 
     private static final String DATABASE_NAME = "database.db";
     private static final int DATABASE_VERSION = 1;
 
-    public Database(@Nullable Context context) {
+    public DbConnector(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -42,7 +43,8 @@ public class Database extends SQLiteOpenHelper {
                         "images INTEGER NOT NULL, " +
                         "price INTEGER NOT NULL, " +
                         "upgrade_value INTEGER NOT NULL, " +
-                        "unlocks TEXT)" //Revisar
+                        "unlocks TEXT," + //Revisar
+                        "repeatable INT NOT NULL)"
         );
     }
 
@@ -50,4 +52,10 @@ public class Database extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
     }
+
+    public Cursor get_whole_table(String table_name){
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.query(table_name, null, null, null, null, null, null);
+    }
+
 }
