@@ -26,6 +26,10 @@ public class DbConnector extends SQLiteOpenHelper {
                 "CREATE TABLE points (" +
                         "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                         "points INTEGER NOT NULL," +
+                        "click_points INTEGER NOT NULL," +
+                        "passive_points INTEGER NOT NULL, " +
+                        "click_multiplier REAL NOT NULL," +
+                        "passive_multiplier REAL NOT NULL,"+
                         "date TEXT NOT NULL)"
         );
         //Crear tabla de mejoras

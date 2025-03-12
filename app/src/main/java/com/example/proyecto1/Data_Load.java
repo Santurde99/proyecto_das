@@ -73,12 +73,13 @@ public class Data_Load {
                     int upgrade_value = cursor.getInt(cursor.getColumnIndexOrThrow("upgrade_value"));
                     String unlocks_string = cursor.getString(cursor.getColumnIndexOrThrow("unlocks"));
                     int repeateable = cursor.getInt(cursor.getColumnIndexOrThrow("repeatable"));
-
-                    //Convertimos el string a un array
-                    int[] unlocks = Arrays.stream(unlocks_string.split(","))
-                            .mapToInt(Integer::parseInt)
-                            .toArray();
-
+                    int[] unlocks = {};
+                    if (!unlocks_string.isEmpty()) {
+                        //Convertimos el string a un array
+                        unlocks = Arrays.stream(unlocks_string.split(","))
+                                .mapToInt(Integer::parseInt)
+                                .toArray();
+                    }
                     //Añadimos la nueva clase
                     if (repeateable == 1) {
                         this.upgrade_list.add(new Repeatable_Upgrade(id, name, description, kind, upgrade_target, status, required_upgrade, archieved_upgrades, images, price, upgrade_value, unlocks));

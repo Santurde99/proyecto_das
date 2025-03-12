@@ -1,10 +1,16 @@
 package com.example.proyecto1;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +20,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,11 +31,13 @@ public class Main_Activity extends AppCompatActivity {
     private TextView nuggets_view;
     private Button dig_button;
     private Button shop_button;
-    private int nuggets = 0;
+    private ImageButton save_button;
+    private ImageButton options_button;
+    private int nuggets;
     private int click_points = 1;
     private Timer timer;
     private int passive_points = 0;
-    private float pasive_multiplier = 1.0f;
+    private float passive_multiplier = 1.0f;
     private float click_multiplier = 1.0f;
 
     private static final int REQUEST_CODE = 1; // Código de solicitud
@@ -36,7 +46,6 @@ public class Main_Activity extends AppCompatActivity {
     @SuppressLint("DiscouragedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         //Setup general de la actividad
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
@@ -47,10 +56,26 @@ public class Main_Activity extends AppCompatActivity {
             return insets;
         });
 
+        //Cargamos los datos
+        this.nuggets = getIntent().getIntExtra("points", 0);
+        this.click_points = getIntent().getIntExtra("click_points", 0);
+        this.passive_points = getIntent().getIntExtra("passive_points", 0);
+        this.click_multiplier = getIntent().getFloatExtra("click_multiplier", 0);
+        this.passive_multiplier = getIntent().getFloatExtra("passive_multiplier", 0);
+        int idle_gained = getIntent().getIntExtra("idle_points", 0);
+
+        if (idle_gained > 0) {
+            Toast.makeText(this, "¡Has generado: " + idle_gained + "pepitas en tu ausencia!", Toast.LENGTH_LONG).show();
+        }
+
+
         //Identificar botones
         nuggets_view = findViewById(R.id.nuggets_v);
         dig_button = findViewById(R.id.dig_b);
         shop_button = findViewById(R.id.shop_b);
+        save_button = findViewById(R.id.save_button);
+        options_button = findViewById(R.id.options_button);
+
 
         //Lógica de la ganancia pasiva (Añadir mejoras)
         // Crear un Timer
@@ -64,7 +89,7 @@ public class Main_Activity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        nuggets = Math.round(nuggets + (passive_points * pasive_multiplier));
+                        nuggets = Math.round(nuggets + (passive_points * passive_multiplier));
                         nuggets_view.setText(String.valueOf(nuggets));
                     }
                 });
@@ -86,6 +111,14 @@ public class Main_Activity extends AppCompatActivity {
                 Intent intent = new Intent(Main_Activity.this, Shop_Activity.class);
                 intent.putExtra("balance", nuggets);
                 startActivityForResult(intent, REQUEST_CODE);
+            }
+        });
+
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Data_Load.getDL().save_upgrades(getApplicationContext()); //Guardar las mejoras
+                save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
             }
         });
     }
@@ -124,12 +157,48 @@ public class Main_Activity extends AppCompatActivity {
                 this.passive_points += upgrade.get_upgrade_value();
             } else {
                 float percentage = (float) upgrade.get_upgrade_value() / 100;
-                this.pasive_multiplier = this.pasive_multiplier + percentage;
+                this.passive_multiplier = this.passive_multiplier + percentage;
             }
         }
         //Debug//Toast.makeText(this,"a" + pasive_multiplier,Toast.LENGTH_SHORT).show();
 
 
+    }
+
+    private void save_stats(Context context){
+
+        DbConnector connector = new DbConnector(context);
+        try (SQLiteDatabase db = connector.getWritableDatabase()) {
+
+            int id = 1; //De momento siempre se guarda en el mismo slot, el primero, no hay opcion de tener mas archivos de guardado
+
+            LocalDateTime now = LocalDateTime.now();
+            String date_formated = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); // Formato ISO-860
+
+            // Crear un ContentValues para almacenar los valores a actualizar
+            ContentValues values = new ContentValues();
+            values.put("points", this.nuggets);
+            values.put("click_points", this.click_points);
+            values.put("passive_points", this.passive_points);
+            values.put("click_multiplier", this.click_multiplier);
+            values.put("passive_multiplier", this.passive_multiplier);
+            values.put("date", date_formated);
+
+            // Actualizar la fila correspondiente en la base de datos
+            int rowsAffected = db.update("points", values, "id = ?", new String[]{String.valueOf(id)});
+
+            // Verificar si la actualización fue exitosa
+            if (rowsAffected > 0) {
+                Log.d("Actualizacion", "Fila actualizada con ID: " + id);
+                Toast.makeText(this,"Se ha guardado la partida",Toast.LENGTH_SHORT).show();
+            } else {
+                Log.d("Actualizacion", "No se encontró ninguna fila con ID: " + id);
+            }
+        } catch (SQLException e) {
+            // Manejar cualquier excepción de SQL
+            Log.e("Actualizacion", "Error al actualizar la base de datos", e);
+        }
+        // Cerrar la base de datos
     }
 
 
