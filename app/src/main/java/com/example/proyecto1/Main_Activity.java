@@ -1,8 +1,11 @@
 package com.example.proyecto1;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -29,8 +33,8 @@ import java.util.TimerTask;
 public class Main_Activity extends AppCompatActivity {
 
     private TextView nuggets_view;
-    private Button dig_button;
-    private Button shop_button;
+    private ImageButton dig_button;
+    private ImageButton shop_button;
     private ImageButton save_button;
     private ImageButton options_button;
     private int nuggets;
@@ -65,7 +69,7 @@ public class Main_Activity extends AppCompatActivity {
         int idle_gained = getIntent().getIntExtra("idle_points", 0);
 
         if (idle_gained > 0) {
-            Toast.makeText(this, "¡Has generado: " + idle_gained + "pepitas en tu ausencia!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "¡Has generado: " + idle_gained + " pepitas en tu ausencia!", Toast.LENGTH_LONG).show();
         }
 
 
@@ -77,7 +81,7 @@ public class Main_Activity extends AppCompatActivity {
         options_button = findViewById(R.id.options_button);
 
 
-        //Lógica de la ganancia pasiva (Añadir mejoras)
+        //-------------------------//Lógica de la ganancia pasiva//---------------------------
         // Crear un Timer
         timer = new Timer();
 
@@ -105,6 +109,7 @@ public class Main_Activity extends AppCompatActivity {
             }
         });
 
+        //---------------------------------//Boton de tienda//----------------------------------------
         shop_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,6 +119,7 @@ public class Main_Activity extends AppCompatActivity {
             }
         });
 
+        //------------------------------//Boton de guardado//--------------------------------------
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,6 +127,27 @@ public class Main_Activity extends AppCompatActivity {
                 save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
             }
         });
+
+        //------------------------------//Boton de opciones//--------------------------------------
+        options_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Main_Activity.this, Options_Activity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Mostrar el cuadro de diálogo cuando se presione el botón de retroceso
+                showExitDialog();
+            }
+        };
+
+        // Registrar el callback con el OnBackPressedDispatcher
+        getOnBackPressedDispatcher().addCallback(this, callback);
     }
 
     @Override
@@ -162,8 +189,9 @@ public class Main_Activity extends AppCompatActivity {
         }
         //Debug//Toast.makeText(this,"a" + pasive_multiplier,Toast.LENGTH_SHORT).show();
 
-
     }
+
+
 
     private void save_stats(Context context){
 
@@ -199,6 +227,33 @@ public class Main_Activity extends AppCompatActivity {
             Log.e("Actualizacion", "Error al actualizar la base de datos", e);
         }
         // Cerrar la base de datos
+    }
+
+    private void showExitDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Salir de la mina")
+                .setMessage("¿Estás seguro de que quieres salir?")
+                .setPositiveButton("Salir y guardar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Data_Load.getDL().save_upgrades(getApplicationContext()); //Guardar las mejoras
+                        save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
+                        finishAffinity();
+                    }
+                })
+                .setNegativeButton("Aún no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 
 

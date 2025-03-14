@@ -48,6 +48,7 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
         recyclerView.setAdapter(adapter);
 
         adapter.setOnItemClickListener(this); //Le informamos al adapter de que la actividad se ocupara de gestionar los botones
+
     }
 
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {

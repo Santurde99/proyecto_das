@@ -20,7 +20,7 @@ public class DbConnector extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //Crear tabla de puntos
+        //Crear tabla de puntosa
         db.execSQL(
                 //Id autoincremental como clave primaria, puntos se refiere a los nuggets y date a la fecha del guardado
                 "CREATE TABLE points (" +

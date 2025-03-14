@@ -3,4 +3,5 @@
     android:src="@drawable/menu"
     android:gravity="center"
     android:tileMode="disabled"
-    android:scaleType="centerCrop" />
+    android:scaleType="centerCrop"
+    />

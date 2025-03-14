@@ -39,16 +39,18 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         public CardView cardView; // Referencia a la CardView
-        public ImageView imageView;
-        public TextView textView;
-        public Button button;
+        public ImageView image;
+        public TextView title;
+        public TextView desc;
+        public Button buy_button;
 
         public MyViewHolder(View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView); // Asignar la CardView
-            imageView = itemView.findViewById(R.id.imageView);
-            textView = itemView.findViewById(R.id.textView);
-            button = itemView.findViewById(R.id.button);
+            image = itemView.findViewById(R.id.imageView);
+            title = itemView.findViewById(R.id.upgrade_title);
+            desc = itemView.findViewById(R.id.textView);
+            buy_button = itemView.findViewById(R.id.button);
         }
     }
 
@@ -65,23 +67,24 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder>{
 
         // Configurar la imagen y la descripción
         holder.cardView.setTag(currentItem.get_id());
-        holder.imageView.setImageResource(currentItem.get_img());
-        holder.textView.setText(currentItem.get_description());
-        holder.button.setText(currentItem.get_price()+" G");
+        holder.image.setImageResource(currentItem.get_img());
+        holder.title.setText(currentItem.get_name());
+        holder.desc.setText(currentItem.get_description());
+        holder.buy_button.setText(currentItem.get_price()+" G");
 
         // Configurar el estado del botón y el estilo de la tarjeta
         switch (currentItem.get_status()) {
             case 1: // Estado normal
-                holder.button.setEnabled(true);
+                holder.buy_button.setEnabled(true);
                 holder.cardView.setAlpha(1.0f); // Opacidad normal
                 break;
             case 2: // Estado bloqueado
-                holder.button.setEnabled(false);
+                holder.buy_button.setEnabled(false);
                 holder.cardView.setAlpha(0.5f); // Opacidad reducida (tono grisáceo)
                 break;
         }
 
-        holder.button.setOnClickListener(new View.OnClickListener() {
+        holder.buy_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (listener != null) {
