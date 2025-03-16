@@ -1,3 +1,73 @@
 <resources>
-    <string name="app_name">Proyecto1</string>
+    <string name="app_name">Gold Digger</string>
+    <string name="menu_tap">Toca para entrar a la mina </string>
+    <string name="nuggets">Pepitas:</string>
+    <string name="notif_1_title">Permiso concedido</string>
+    <string name="notif_1_desc">¡Las notificaciones se verán así!</string>
+    <string name="notif_2_title">¡1000 Pepitas!</string>
+    <string name="notif_2_desc">Has reunido más de 1000 pepitas, ¿Porque no visitas la tienda?</string>
+    <string name="return_toast_1_1">¡Has generado: </string>
+    <string name="return_toast_1_2"> pepitas en tu ausencia!</string>
+    <string name="saved_toast">Se ha guardado la partida</string>
+    <string name="buy_toast">Se ha comprado la mejora</string>
+    <string name="err_buy_toast_id">Error, no existe la mejora con ID: </string>
+    <string name="err_buy_toast_nugg">No tienes suficientes pepitas</string>
+    <string name="notif_toast">Recomendamos habilitar las notificaciones</string>
+
+    <string name="exit_diag_title"> pepitas en tu ausencia!</string>
+    <string name="exit_diag_text">¿Estás seguro de que quieres salir?</string>
+    <string name="exit_diag_yes">Salir y guardar</string>
+    <string name="exit_diag_no">Aún no</string>
+
+    <string name="delete_diag_title">Borrar partida</string>
+    <string name="delete_diag_text">¿Estás seguro de que quieres borrar la partida?</string>
+    <string name="delete_diag_yes">Sí, Borrar</string>
+    <string name="delete_diag_no">No, Mantener</string>
+
+    <string name="delete_toast">Partida borrada</string>
+    <string name="err_delete_toast">No, Mantener</string>
+
+    <string name="language_toast">Idioma cambiado, reinicia la app para aplicar los cambios</string>
+
+
+    <string name="u1_title">Pico de Madera</string>
+    <string name="u1_desc">Un simple pico de madera que aumenta la eficiencia de la minería.</string>
+
+    <string name="u2_title">Pico de Piedra</string>
+    <string name="u2_desc">Un pico más resistente, permite extraer minerales con mayor facilidad.</string>
+
+    <string name="u3_title">Minería Automatizada</string>
+    <string name="u3_desc">Un simple sistema automatizado que extrae minerales lentamente sin necesidad de hacer click.</string>
+
+    <string name="u4_title">Fuerza del Minero</string>
+    <string name="u4_desc">(Repetible) Aumenta tu resistencia y fuerza, permitiéndote extraer más minerales con cada golpe.</string>
+
+    <string name="u5_title">Pico de Hierro</string>
+    <string name="u5_desc">Un pico de hierro más duradero y eficiente.</string>
+
+    <string name="u6_title">Cinta Transportadora</string>
+    <string name="u6_desc">Transporta los minerales de forma más eficiente, aumentando la producción pasiva.</string>
+
+    <string name="u7_title">Mejora de Herramientas</string>
+    <string name="u7_desc">(Repetible) Pequeñas mejoras en tus herramientas aumentan la eficiencia de la minería.</string>
+
+    <string name="u8_title">Excavadora Pequeña</string>
+    <string name="u8_desc">Una excavadora automática que extrae minerales sin esfuerzo.</string>
+
+    <string name="u9_title">Dinamita Minera</string>
+    <string name="u9_desc">(Repetible) Explosiones controladas permiten extraer más minerales en menos tiempo.</string>
+
+    <string name="u10_title">Excavadora Gigante</string>
+    <string name="u10_desc">Una máquina monstruosa que extrae toneladas de minerales por segundo.</string>
+
+    <string name="u11_title">Láser Minero</string>
+    <string name="u11_desc">(Repetible) Un potente láser que funde rocas al instante.</string>
+
+    <string name="u12_title">Minado Molecular</string>
+    <string name="u12_desc">Separación de minerales a nivel atómico para máxima eficiencia.</string>
+
+    <string name="u13_title">Nanobots Mineros</string>
+    <string name="u13_desc">(Repetible) Pequeños robots que trabajan a nivel atómico, recolectando minerales sin descanso.</string>
+
+
 </resources>

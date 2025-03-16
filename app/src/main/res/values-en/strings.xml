@@ -1,0 +1,72 @@
+<resources>
+    <string name="app_name">Gold Digger</string>
+    <string name="menu_tap">Tap to enter the mine</string>
+    <string name="nuggets">Nuggets:</string>
+    <string name="notif_1_title">Permission granted</string>
+    <string name="notif_1_desc">Notifications will look like this!</string>
+    <string name="notif_2_title">1000 Nuggets!</string>
+    <string name="notif_2_desc">You have collected more than 1000 nuggets, why not visit the shop?</string>
+    <string name="return_toast_1_1">You have generated: </string>
+    <string name="return_toast_1_2"> nuggets in your absence!</string>
+    <string name="saved_toast">Game saved</string>
+    <string name="buy_toast">Upgrade purchased</string>
+    <string name="err_buy_toast_id">Error, no upgrade found with ID: </string>
+    <string name="err_buy_toast_nugg">You don’t have enough nuggets</string>
+    <string name="notif_toast">We recommend enabling notifications</string>
+
+    <string name="exit_diag_title">Nuggets in your absence!</string>
+    <string name="exit_diag_text">Are you sure you want to exit?</string>
+    <string name="exit_diag_yes">Exit and Save</string>
+    <string name="exit_diag_no">Not yet</string>
+
+    <string name="delete_diag_title">Delete Game</string>
+    <string name="delete_diag_text">Are you sure you want to delete the game?</string>
+    <string name="delete_diag_yes">Yes, Delete</string>
+    <string name="delete_diag_no">No, Keep</string>
+
+    <string name="delete_toast">Game deleted</string>
+    <string name="err_delete_toast">No, Keep</string>
+
+    <string name="language_toast">Language swapped, restart the app to apply changes</string>
+
+
+    <string name="u1_title">Wooden Pickaxe</string>
+    <string name="u1_desc">A simple wooden pickaxe that increases mining efficiency.</string>
+
+    <string name="u2_title">Stone Pickaxe</string>
+    <string name="u2_desc">A more durable pickaxe that makes extracting minerals easier.</string>
+
+    <string name="u3_title">Automated Mining</string>
+    <string name="u3_desc">A simple automated system that slowly extracts minerals without clicking.</string>
+
+    <string name="u4_title">Miner’s Strength</string>
+    <string name="u4_desc">(Repeatable) Increases your endurance and strength, allowing you to extract more minerals with each hit.</string>
+
+    <string name="u5_title">Iron Pickaxe</string>
+    <string name="u5_desc">A more durable and efficient iron pickaxe.</string>
+
+    <string name="u6_title">Conveyor Belt</string>
+    <string name="u6_desc">Transports minerals more efficiently, increasing passive production.</string>
+
+    <string name="u7_title">Tool Upgrade</string>
+    <string name="u7_desc">(Repeatable) Small improvements to your tools increase mining efficiency.</string>
+
+    <string name="u8_title">Small Excavator</string>
+    <string name="u8_desc">An automatic excavator that extracts minerals effortlessly.</string>
+
+    <string name="u9_title">Mining Dynamite</string>
+    <string name="u9_desc">(Repeatable) Controlled explosions allow for faster mineral extraction.</string>
+
+    <string name="u10_title">Giant Excavator</string>
+    <string name="u10_desc">A monstrous machine that extracts tons of minerals per second.</string>
+
+    <string name="u11_title">Mining Laser</string>
+    <string name="u11_desc">(Repeatable) A powerful laser that melts rocks instantly.</string>
+
+    <string name="u12_title">Molecular Mining</string>
+    <string name="u12_desc">Separation of minerals at the atomic level for maximum efficiency.</string>
+
+    <string name="u13_title">Mining Nanobots</string>
+    <string name="u13_desc">(Repeatable) Tiny robots that work at the atomic level, collecting minerals tirelessly.</string>
+
+</resources>

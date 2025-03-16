@@ -2,6 +2,8 @@ package com.example.proyecto1;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -49,6 +51,18 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
 
         adapter.setOnItemClickListener(this); //Le informamos al adapter de que la actividad se ocupara de gestionar los botones
 
+        ImageButton back_button = findViewById(R.id.back_button2);
+
+        back_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.putIntegerArrayListExtra("bought", bought_upgrades_list);
+                setResult(RESULT_OK, intent);
+                finish(); // Cierra la actividad
+            }
+        });
+
     }
 
     private final OnBackPressedCallback callback = new OnBackPressedCallback(true) {
@@ -61,13 +75,6 @@ public class Shop_Activity extends AppCompatActivity implements Adapter.OnItemCl
         }
     };
 
-    /**
-     * 1. comprobar si existe
-     * 2. comprobar si se puede comprar y actualizar estado
-     * 3. obtener el precio para restarlo al balance actual y posteriormente al real que sigue sumando
-     * 4. mandar señal a las mejoras que dependen de la actual
-     * 5. recargar el adapter
-     */
     @Override
     public void onItemClick(int itemId) {
         System.out.println(itemId);

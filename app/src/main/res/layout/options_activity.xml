@@ -66,7 +66,7 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/twitter_button"
-        app:layout_constraintVertical_bias="0.192"
+        app:layout_constraintVertical_bias="0.616"
         app:srcCompat="@drawable/remove_button" />
 
     <ImageButton
@@ -78,10 +78,40 @@
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintHorizontal_bias="0.955"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.038"
+        app:layout_constraintVertical_bias="0.023"
         app:srcCompat="@drawable/back_button" />
+
+    <ImageButton
+        android:id="@+id/spanish_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/reset_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.313"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/twitter_button"
+        app:layout_constraintVertical_bias="0.497"
+        app:srcCompat="@drawable/spain" />
+
+    <ImageButton
+        android:id="@+id/english_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:adjustViewBounds="true"
+        android:background="@null"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/reset_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.683"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/twitter_button"
+        app:layout_constraintVertical_bias="0.497"
+        app:srcCompat="@drawable/uk" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -11,7 +11,7 @@ public class Generic_Upgrade {
     private final int required_upgrades; //Cantidad de mejoras previas que tienen que desbloquearse
     private int archived_upgrades; //Cantidad de mejoras obtenidas para el desbloqueo
     private final int image; //Path a su imagen
-    private final int price; //Precio de la mejora
+    protected int price; //Precio de la mejora
     private final int[] unlocks; // Ids de mejoras que desbloquea
     private final int upgrade_value;//Valor de la cantidad de mejora que da (ej +3)
     private final int kind; //Tipo de mejora, fija = 0 o porcentual = 1

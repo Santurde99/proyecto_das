@@ -15,8 +15,10 @@ public class Data_Load {
 
     private static Data_Load the_dataload;
     private final ArrayList<Generic_Upgrade> upgrade_list = new ArrayList<>();
+    private final Context app_context;
 
     private Data_Load(Boolean load_data, Context context) {
+        this.app_context = context;
         if (load_data) {
             load_from_database(context);
         } else {
@@ -45,10 +47,19 @@ public class Data_Load {
     private void generate_upgrades() {
         //KIND -> 0 = valor fijo, 1 = porcentual
         //UPGRADE_TARGET -> 0 = pasivo, 1 = click, n = mejora concreta
-        this.upgrade_list.add(new Generic_Upgrade(1, "Pico de madera", "Gana +5 pepitas por toque", 0, 1, 1, 0, 0, R.drawable.placeholder, 10, 5, new int[]{2}));
-        this.upgrade_list.add(new Generic_Upgrade(2, "Pico de piedra", "Gana +8 pepitas por segundo", 0, 0, 0, 1, 0, R.drawable.placeholder, 8, 10, new int[]{3}));
-        this.upgrade_list.add(new Generic_Upgrade(3, "Taladro", "Gana 50% más de pepitas por segundo", 1, 0, 0, 1, 0, R.drawable.placeholder, 30, 50, new int[]{}));
-        this.upgrade_list.add(new Repeatable_Upgrade(4, "Pico de madera", "Gana +1 pepitas por toque", 0, 0, 1, 0, 0, R.drawable.placeholder, 2, 1, new int[]{2}));
+        this.upgrade_list.add(new Generic_Upgrade(1, app_context.getString(R.string.u1_title), app_context.getString(R.string.u1_desc), 0, 1, 1, 0, 0, R.drawable.pickaxe, 20, 6, new int[]{2,3}));
+        this.upgrade_list.add(new Generic_Upgrade(2, app_context.getString(R.string.u2_title), app_context.getString(R.string.u2_desc), 0, 1, 0, 1, 0, R.drawable.pickaxe, 500, 8, new int[]{4}));
+        this.upgrade_list.add(new Generic_Upgrade(3, app_context.getString(R.string.u3_title), app_context.getString(R.string.u3_desc), 0, 0, 0, 1, 0, R.drawable.drill, 1000, 5, new int[]{5}));
+        this.upgrade_list.add(new Repeatable_Upgrade(4, app_context.getString(R.string.u4_title), app_context.getString(R.string.u4_desc), 0, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 1500, 6, new int[]{6}));
+        this.upgrade_list.add(new Generic_Upgrade(5, app_context.getString(R.string.u5_title), app_context.getString(R.string.u5_desc), 0, 1, 0, 1, 0, R.drawable.pickaxe, 5000, 11, new int[]{7}));
+        this.upgrade_list.add(new Generic_Upgrade(6, app_context.getString(R.string.u6_title), app_context.getString(R.string.u6_desc), 0, 0, 0, 2, 0, R.drawable.drill, 7500, 12, new int[]{8}));
+        this.upgrade_list.add(new Repeatable_Upgrade(7, app_context.getString(R.string.u7_title), app_context.getString(R.string.u7_desc), 1, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 10000, 5, new int[]{9}));
+        this.upgrade_list.add(new Generic_Upgrade(8, app_context.getString(R.string.u8_title), app_context.getString(R.string.u8_desc), 0, 0, 0, 1, 0, R.drawable.drill, 20000, 15, new int[]{10}));
+        this.upgrade_list.add(new Repeatable_Upgrade(9, app_context.getString(R.string.u9_title), app_context.getString(R.string.u9_desc), 1, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 50000, 10, new int[]{11}));
+        this.upgrade_list.add(new Generic_Upgrade(10, app_context.getString(R.string.u10_title), app_context.getString(R.string.u10_desc), 0, 0, 0, 1, 0, R.drawable.drill, 75000, 40, new int[]{12}));
+        this.upgrade_list.add(new Repeatable_Upgrade(11, app_context.getString(R.string.u11_title), app_context.getString(R.string.u11_desc), 1, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 120000, 15, new int[]{13}));
+        this.upgrade_list.add(new Generic_Upgrade(12, app_context.getString(R.string.u12_title), app_context.getString(R.string.u12_desc), 0, 0, 0, 1, 0, R.drawable.drill, 200000, 100, new int[]{}));
+        this.upgrade_list.add(new Repeatable_Upgrade(13, app_context.getString(R.string.u13_title), app_context.getString(R.string.u13_desc), 0, 0, 0, 1, 0, R.drawable.drill_repeat, 50000, 100, new int[]{}));
 
     }
 
@@ -101,8 +112,11 @@ public class Data_Load {
             for (Generic_Upgrade upgrade : upgrade_list) {
                 // Obtener los valores usando los getters
                 int id = upgrade.get_id();
+                String name = upgrade.get_name();
+                String desc = upgrade.get_description();
                 int upgrade_target = upgrade.get_upgrade_target();
                 int status = upgrade.get_status();
+                int price = upgrade.get_price();
                 int archieved_upgrades = upgrade.get_archieved_upgrades();
                 int repeatable;
                 if (upgrade instanceof Repeatable_Upgrade) {
@@ -115,6 +129,9 @@ public class Data_Load {
                 ContentValues values = new ContentValues();
                 values.put("upgrade_target", upgrade_target);
                 values.put("status", status);
+                values.put("price", price);
+                values.put("name",name);
+                values.put("description",desc);
                 values.put("archieved_upgrades", archieved_upgrades);
                 values.put("repeatable", repeatable);
 

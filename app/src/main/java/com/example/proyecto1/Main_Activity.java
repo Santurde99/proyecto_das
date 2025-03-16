@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsCompat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,6 +44,7 @@ public class Main_Activity extends AppCompatActivity {
     private int passive_points = 0;
     private float passive_multiplier = 1.0f;
     private float click_multiplier = 1.0f;
+    private int notification_count = 0;
 
     private static final int REQUEST_CODE = 1; // Código de solicitud
 
@@ -59,6 +61,7 @@ public class Main_Activity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Notification_Helper.createNotificationChannel(this);
 
         //Cargamos los datos
         this.nuggets = getIntent().getIntExtra("points", 0);
@@ -69,7 +72,7 @@ public class Main_Activity extends AppCompatActivity {
         int idle_gained = getIntent().getIntExtra("idle_points", 0);
 
         if (idle_gained > 0) {
-            Toast.makeText(this, "¡Has generado: " + idle_gained + " pepitas en tu ausencia!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.return_toast_1_1) + " "+idle_gained+" " + getString(R.string.return_toast_1_2), Toast.LENGTH_LONG).show();
         }
 
 
@@ -95,10 +98,14 @@ public class Main_Activity extends AppCompatActivity {
                     public void run() {
                         nuggets = Math.round(nuggets + (passive_points * passive_multiplier));
                         nuggets_view.setText(String.valueOf(nuggets));
+                        if ((nuggets > 1000) &&(notification_count == 0)){
+                            Notification_Helper.showNotification(Main_Activity.this,getString(R.string.notif_2_title),getString(R.string.notif_2_desc));
+                            notification_count = notification_count +1;
+                        }
                     }
                 });
             }
-        }, 0, 1000); // Retraso inicial de 0 ms, intervalo de 1000 ms (1 segundo)
+        }, 0, 1000); //intervalo de 1000 ms (1 segundo)
 
         //Lógica del boton de cavar
         dig_button.setOnClickListener(new View.OnClickListener() {
@@ -167,8 +174,15 @@ public class Main_Activity extends AppCompatActivity {
     private void apply_upgrades(int id){
         Generic_Upgrade upgrade = Data_Load.getDL().get_upgrade_by_id(id);
 
-        nuggets = nuggets-upgrade.get_price();
-        int[] upgrade_info = upgrade.get_upgrade();
+        int[] upgrade_info;
+
+        if (upgrade instanceof Repeatable_Upgrade) {
+            nuggets = nuggets- ((Repeatable_Upgrade) upgrade).get_previous_price();
+            upgrade_info = upgrade.get_upgrade();
+        }else {
+            nuggets = nuggets - upgrade.get_price();
+            upgrade_info = upgrade.get_upgrade();
+        }
 
 
         //Comprobamos el objetivo de la mejora
@@ -218,7 +232,7 @@ public class Main_Activity extends AppCompatActivity {
             // Verificar si la actualización fue exitosa
             if (rowsAffected > 0) {
                 Log.d("Actualizacion", "Fila actualizada con ID: " + id);
-                Toast.makeText(this,"Se ha guardado la partida",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,getString(R.string.saved_toast),Toast.LENGTH_SHORT).show();
             } else {
                 Log.d("Actualizacion", "No se encontró ninguna fila con ID: " + id);
             }
@@ -231,17 +245,18 @@ public class Main_Activity extends AppCompatActivity {
 
     private void showExitDialog() {
         new AlertDialog.Builder(this)
-                .setTitle("Salir de la mina")
-                .setMessage("¿Estás seguro de que quieres salir?")
-                .setPositiveButton("Salir y guardar", new DialogInterface.OnClickListener() {
+                .setTitle(getString(R.string.exit_diag_title))
+                .setMessage(getString(R.string.exit_diag_text))
+                .setPositiveButton(getString(R.string.exit_diag_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Data_Load.getDL().save_upgrades(getApplicationContext()); //Guardar las mejoras
                         save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
                         finishAffinity();
+                        System.exit(0);
                     }
                 })
-                .setNegativeButton("Aún no", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.exit_diag_no) , new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

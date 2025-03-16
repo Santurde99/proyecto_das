@@ -3,18 +3,25 @@ package com.example.proyecto1;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Layout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
+import android.Manifest;
+
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -24,9 +31,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Locale;
 
 public class Menu_activity extends AppCompatActivity {
 
+    private ActivityResultLauncher<String> requestPermissionLauncher;
     private int load_points;
     private int load_click_points;
     private int load_passive_points;
@@ -42,6 +51,7 @@ public class Menu_activity extends AppCompatActivity {
         this.ready = false;
 
         super.onCreate(savedInstanceState);
+        Language_Helper.loadLocale(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.menu_activity);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -50,14 +60,28 @@ public class Menu_activity extends AppCompatActivity {
             return insets;
         });
 
+        //Pedir permiso de notificaciones
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        Notification_Helper.showNotification(this, getString(R.string.notif_1_title), getString(R.string.notif_1_desc));
+                    } else {
+                        Toast.makeText(this, getString(R.string.notif_toast), Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        askForPermission();
+
+
         layout = findViewById(R.id.main);
 
         //Comprobar si es la primera vez que se inicia la app comprobando la bd
         Context context = getApplicationContext();
         if (getDatabasePath("database.db").exists()){
             //Existe la base de datos, cargamos los datos y los pasamos en un intent
-            Data_Load.generate_list(true,context);
             load_stats(context);
+            Data_Load.generate_list(true,context);
             add_afk_points();
             ready = true;
 
@@ -169,6 +193,15 @@ public class Menu_activity extends AppCompatActivity {
         long seconds_since_last_login = duration.getSeconds();
         this.idle_gained_points = Math.round(seconds_since_last_login + ((this.load_passive_points * this.load_passive_multiplier)/2));
         this.load_points = this.load_points + this.idle_gained_points;
+    }
+
+    private void askForPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // API 33+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // Pedir el permiso al usuario
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS);
+            }
+        }
     }
 
 }
