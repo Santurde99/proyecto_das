@@ -31,43 +31,43 @@
 
 
     <string name="u1_title">Pico de Madera</string>
-    <string name="u1_desc">Un simple pico de madera que aumenta la eficiencia de la minería.</string>
+    <string name="u1_desc">Un simple pico de madera que aumenta la eficiencia de la minería. (+6 pepitas por toque)</string>
 
     <string name="u2_title">Pico de Piedra</string>
-    <string name="u2_desc">Un pico más resistente, permite extraer minerales con mayor facilidad.</string>
+    <string name="u2_desc">Un pico más resistente, permite extraer minerales con mayor facilidad. (+8 pepitas por toque)</string>
 
     <string name="u3_title">Minería Automatizada</string>
-    <string name="u3_desc">Un simple sistema automatizado que extrae minerales lentamente sin necesidad de hacer click.</string>
+    <string name="u3_desc">Un simple sistema automatizado que extrae minerales lentamente sin necesidad de hacer click. (+5 pepitas por segundo)</string>
 
     <string name="u4_title">Fuerza del Minero</string>
-    <string name="u4_desc">(Repetible) Aumenta tu resistencia y fuerza, permitiéndote extraer más minerales con cada golpe.</string>
+    <string name="u4_desc">(Repetible) Aumenta tu resistencia y fuerza, permitiéndote extraer más minerales con cada golpe. (+ 6 pepitas por toque)</string>
 
     <string name="u5_title">Pico de Hierro</string>
-    <string name="u5_desc">Un pico de hierro más duradero y eficiente.</string>
+    <string name="u5_desc">Un pico de hierro más duradero y eficiente. (+11 pepitas por toque)</string>
 
     <string name="u6_title">Cinta Transportadora</string>
-    <string name="u6_desc">Transporta los minerales de forma más eficiente, aumentando la producción pasiva.</string>
+    <string name="u6_desc">Transporta los minerales de forma más eficiente, aumentando la producción pasiva. (+12 pepitas por segundo)</string>
 
     <string name="u7_title">Mejora de Herramientas</string>
-    <string name="u7_desc">(Repetible) Pequeñas mejoras en tus herramientas aumentan la eficiencia de la minería.</string>
+    <string name="u7_desc">(Repetible) Pequeñas mejoras en tus herramientas aumentan la eficiencia de la minería. (+8 pepitas por toque)</string>
 
     <string name="u8_title">Excavadora Pequeña</string>
-    <string name="u8_desc">Una excavadora automática que extrae minerales sin esfuerzo.</string>
+    <string name="u8_desc">Una excavadora automática que extrae minerales sin esfuerzo. (+15 pepitas por segundo)</string>
 
     <string name="u9_title">Dinamita Minera</string>
-    <string name="u9_desc">(Repetible) Explosiones controladas permiten extraer más minerales en menos tiempo.</string>
+    <string name="u9_desc">(Repetible) Explosiones controladas permiten extraer más minerales en menos tiempo. (+10 pepitas por toque)</string>
 
     <string name="u10_title">Excavadora Gigante</string>
-    <string name="u10_desc">Una máquina monstruosa que extrae toneladas de minerales por segundo.</string>
+    <string name="u10_desc">Una máquina monstruosa que extrae toneladas de minerales por segundo. (+40 pepitas por segundo)</string>
 
     <string name="u11_title">Láser Minero</string>
-    <string name="u11_desc">(Repetible) Un potente láser que funde rocas al instante.</string>
+    <string name="u11_desc">(Repetible) Un potente láser que funde rocas al instante. (+15 pepitas por toque)</string>
 
     <string name="u12_title">Minado Molecular</string>
-    <string name="u12_desc">Separación de minerales a nivel atómico para máxima eficiencia.</string>
+    <string name="u12_desc">Separación de minerales a nivel atómico para máxima eficiencia. (+100 pepitas por segundo)</string>
 
     <string name="u13_title">Nanobots Mineros</string>
-    <string name="u13_desc">(Repetible) Pequeños robots que trabajan a nivel atómico, recolectando minerales sin descanso.</string>
+    <string name="u13_desc">(Repetible) Pequeños robots que trabajan a nivel atómico, recolectando minerales sin descanso. (+100 pepitas por segundo)</string>
 
 
 </resources>

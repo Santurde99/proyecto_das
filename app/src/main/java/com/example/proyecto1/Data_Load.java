@@ -53,7 +53,7 @@ public class Data_Load {
         this.upgrade_list.add(new Repeatable_Upgrade(4, app_context.getString(R.string.u4_title), app_context.getString(R.string.u4_desc), 0, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 1500, 6, new int[]{6}));
         this.upgrade_list.add(new Generic_Upgrade(5, app_context.getString(R.string.u5_title), app_context.getString(R.string.u5_desc), 0, 1, 0, 1, 0, R.drawable.pickaxe, 5000, 11, new int[]{7}));
         this.upgrade_list.add(new Generic_Upgrade(6, app_context.getString(R.string.u6_title), app_context.getString(R.string.u6_desc), 0, 0, 0, 2, 0, R.drawable.drill, 7500, 12, new int[]{8}));
-        this.upgrade_list.add(new Repeatable_Upgrade(7, app_context.getString(R.string.u7_title), app_context.getString(R.string.u7_desc), 1, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 10000, 5, new int[]{9}));
+        this.upgrade_list.add(new Repeatable_Upgrade(7, app_context.getString(R.string.u7_title), app_context.getString(R.string.u7_desc), 1, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 10000, 8, new int[]{9}));
         this.upgrade_list.add(new Generic_Upgrade(8, app_context.getString(R.string.u8_title), app_context.getString(R.string.u8_desc), 0, 0, 0, 1, 0, R.drawable.drill, 20000, 15, new int[]{10}));
         this.upgrade_list.add(new Repeatable_Upgrade(9, app_context.getString(R.string.u9_title), app_context.getString(R.string.u9_desc), 1, 1, 0, 1, 0, R.drawable.pickaxe_repeat, 50000, 10, new int[]{11}));
         this.upgrade_list.add(new Generic_Upgrade(10, app_context.getString(R.string.u10_title), app_context.getString(R.string.u10_desc), 0, 0, 0, 1, 0, R.drawable.drill, 75000, 40, new int[]{12}));

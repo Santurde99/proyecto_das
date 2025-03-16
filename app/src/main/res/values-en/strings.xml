@@ -31,42 +31,43 @@
 
 
     <string name="u1_title">Wooden Pickaxe</string>
-    <string name="u1_desc">A simple wooden pickaxe that increases mining efficiency.</string>
+    <string name="u1_desc">A simple wooden pickaxe that increases mining efficiency. (+6 nuggets per hit)</string>
 
     <string name="u2_title">Stone Pickaxe</string>
-    <string name="u2_desc">A more durable pickaxe that makes extracting minerals easier.</string>
+    <string name="u2_desc">A more durable pickaxe, allows for easier mineral extraction. (+8 nuggets per hit)</string>
 
     <string name="u3_title">Automated Mining</string>
-    <string name="u3_desc">A simple automated system that slowly extracts minerals without clicking.</string>
+    <string name="u3_desc">A simple automated system that extracts minerals slowly without the need to click. (+5 nuggets per second)</string>
 
-    <string name="u4_title">Miner’s Strength</string>
-    <string name="u4_desc">(Repeatable) Increases your endurance and strength, allowing you to extract more minerals with each hit.</string>
+    <string name="u4_title">Miner\'s Strength</string>
+    <string name="u4_desc">(Repeatable) Increases your resistance and strength, allowing you to extract more minerals with each hit. (+6 nuggets per hit)</string>
 
     <string name="u5_title">Iron Pickaxe</string>
-    <string name="u5_desc">A more durable and efficient iron pickaxe.</string>
+    <string name="u5_desc">A more durable and efficient iron pickaxe. (+11 nuggets per hit)</string>
 
     <string name="u6_title">Conveyor Belt</string>
-    <string name="u6_desc">Transports minerals more efficiently, increasing passive production.</string>
+    <string name="u6_desc">Transports minerals more efficiently, increasing passive production. (+12 nuggets per second)</string>
 
     <string name="u7_title">Tool Upgrade</string>
-    <string name="u7_desc">(Repeatable) Small improvements to your tools increase mining efficiency.</string>
+    <string name="u7_desc">(Repeatable) Small upgrades to your tools increase mining efficiency. (+8 nuggets per hit)</string>
 
     <string name="u8_title">Small Excavator</string>
-    <string name="u8_desc">An automatic excavator that extracts minerals effortlessly.</string>
+    <string name="u8_desc">An automatic excavator that extracts minerals effortlessly. (+15 nuggets per second)</string>
 
     <string name="u9_title">Mining Dynamite</string>
-    <string name="u9_desc">(Repeatable) Controlled explosions allow for faster mineral extraction.</string>
+    <string name="u9_desc">(Repeatable) Controlled explosions allow for more minerals to be extracted in less time. (+10 nuggets per hit)</string>
 
     <string name="u10_title">Giant Excavator</string>
-    <string name="u10_desc">A monstrous machine that extracts tons of minerals per second.</string>
+    <string name="u10_desc">A monstrous machine that extracts tons of minerals per second. (+40 nuggets per second)</string>
 
     <string name="u11_title">Mining Laser</string>
-    <string name="u11_desc">(Repeatable) A powerful laser that melts rocks instantly.</string>
+    <string name="u11_desc">(Repeatable) A powerful laser that melts rocks instantly. (+15 nuggets per hit)</string>
 
     <string name="u12_title">Molecular Mining</string>
-    <string name="u12_desc">Separation of minerals at the atomic level for maximum efficiency.</string>
+    <string name="u12_desc">Separation of minerals at the atomic level for maximum efficiency. (+100 nuggets per second)</string>
 
     <string name="u13_title">Mining Nanobots</string>
-    <string name="u13_desc">(Repeatable) Tiny robots that work at the atomic level, collecting minerals tirelessly.</string>
+    <string name="u13_desc">(Repeatable) Small robots that work at the atomic level, collecting minerals tirelessly. (+100 nuggets per second)</string>
+
 
 </resources>
