@@ -14,7 +14,7 @@
     <string name="err_buy_toast_nugg">No tienes suficientes pepitas</string>
     <string name="notif_toast">Recomendamos habilitar las notificaciones</string>
 
-    <string name="exit_diag_title"> pepitas en tu ausencia!</string>
+    <string name="exit_diag_title">Salir de la mina</string>
     <string name="exit_diag_text">¿Estás seguro de que quieres salir?</string>
     <string name="exit_diag_yes">Salir y guardar</string>
     <string name="exit_diag_no">Aún no</string>

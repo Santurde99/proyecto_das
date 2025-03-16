@@ -14,7 +14,7 @@
     <string name="err_buy_toast_nugg">You don’t have enough nuggets</string>
     <string name="notif_toast">We recommend enabling notifications</string>
 
-    <string name="exit_diag_title">Nuggets in your absence!</string>
+    <string name="exit_diag_title">Leave mine</string>
     <string name="exit_diag_text">Are you sure you want to exit?</string>
     <string name="exit_diag_yes">Exit and Save</string>
     <string name="exit_diag_no">Not yet</string>
