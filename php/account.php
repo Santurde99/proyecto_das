@@ -65,7 +65,7 @@ switch ($action) {
         }
 
         // Verificar si el usuario ya existe
-        $query = "SELECT id FROM users WHERE username = ?";
+        $query = "SELECT * FROM users WHERE username = ?";
         $stmt = mysqli_prepare($con, $query);
         mysqli_stmt_bind_param($stmt, "s", $username);
         mysqli_stmt_execute($stmt);
@@ -89,7 +89,6 @@ switch ($action) {
             echo json_encode([
                 'status' => 'success',
                 'message' => 'Usuario registrado correctamente',
-                'user_id' => mysqli_insert_id($con)
             ]);
         } else {
             echo json_encode([

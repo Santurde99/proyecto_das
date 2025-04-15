@@ -18,9 +18,9 @@ import java.net.URL;
 public class UserLogin_Worker extends Worker {
 
     // Keys para los datos
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_PASSWORD = "password";
-    private static final String KEY_LOGIN_RESULT = "login_valid";
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_PASSWORD = "password";
+    public static final String KEY_LOGIN_RESULT = "login_valid";
 
     public UserLogin_Worker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -41,7 +41,7 @@ public class UserLogin_Worker extends Worker {
         HttpURLConnection urlConnection = null;
         try {
             // Configurar conexión
-            URL dest = new URL("http://tuserver.com/users_api.php");
+            URL dest = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/account.php");
             urlConnection = (HttpURLConnection) dest.openConnection();
             urlConnection.setConnectTimeout(5000);
             urlConnection.setReadTimeout(5000);

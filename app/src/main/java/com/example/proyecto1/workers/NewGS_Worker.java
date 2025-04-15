@@ -1,6 +1,8 @@
 package com.example.proyecto1.workers;
 
 import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
@@ -13,9 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class NewGS_Worker extends Worker {
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_STATUS = "status";
-    private static final String KEY_MESSAGE = "message";
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_STATUS = "status";
 
     public NewGS_Worker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -28,36 +29,57 @@ public class NewGS_Worker extends Worker {
         if (username == null) {
             return Result.failure();
         }
-
+        Log.i("NewGS_Worker","entramos");
         try {
-            URL url = new URL("http://tuserver.com/users_api.php");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/game_state.php");
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            urlConnection.setRequestProperty("Accept", "application/json");
+            urlConnection.setDoOutput(true);
 
             JSONObject json = new JSONObject();
             json.put("action", "new");
             json.put(KEY_USERNAME, username);
+            Log.d("DEBUG", "JSON enviado: " + json.toString());
 
-            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+            OutputStreamWriter out = new OutputStreamWriter(urlConnection.getOutputStream());
             out.write(json.toString());
             out.close();
 
-            if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String response = in.readLine();
-                in.close();
+            int statusCode = urlConnection.getResponseCode();
+
+            //Si es un codigo de error tomamo el stream de error
+
+            BufferedReader in;
+            if (urlConnection.getResponseCode() >= 400) {
+                in = new BufferedReader(new InputStreamReader(urlConnection.getErrorStream()));
+            } else {
+                in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+            }
+
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null) {
+                response.append(line);
+            }
+            in.close();
+
+
+            if (statusCode == 200) {
 
                 JSONParser parser = new JSONParser();
-                JSONObject responseJson = (JSONObject) parser.parse(response);
+                JSONObject responseJson = (JSONObject) parser.parse(String.valueOf(response));
 
                 if ("success".equals(responseJson.get(KEY_STATUS))) {
                     return Result.success();
                 }
             }
+            Log.e("UserRegister_Worker", "Código de respuesta: " + statusCode);
+            Log.e("ServerRawResponse", response.toString());
             return Result.failure();
         } catch (Exception e) {
+            Log.e("UserRegister_Worker", "Error en doWork: " + e.getMessage(), e);
             return Result.failure();
         }
     }

@@ -1,4 +1,7 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: application/json');
 
 // Configuración de la conexión
@@ -18,12 +21,15 @@ $data = json_decode(file_get_contents('php://input'), true);
 $action = $data['action'] ?? null;
 $username = isset($data['username']) ? mysqli_real_escape_string($con, $data['username']) : null;
 
+
+if (!$action || !$username) {
+    echo json_encode(['valid' => false]);
+    exit();
+}
+
+
 switch ($action) {
     case 'load':
-        if (!$username) {
-            echo json_encode(['status' => 'error', 'message' => 'Username is required']);
-            break;
-        }
 
         $query = "SELECT * FROM upgrades WHERE username = ?";
         $stmt = mysqli_prepare($con, $query);
@@ -40,15 +46,11 @@ switch ($action) {
         break;
 
     case 'save':
-        if (!$username || !isset($data['upgrade_id']) || !isset($data['status'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Missing parameters']);
-            break;
-        }
 
         $upgradeId = (int)$data['upgrade_id'];
         $status = (int)$data['status'];
 
-        $query = "UPDATE upgrades SET status = ? WHERE username = ? AND upgrade_id = ?";
+        $query = "UPDATE user_upgrades SET status = ? WHERE username = ? AND upgrade_id = ?";
         $stmt = mysqli_prepare($con, $query);
         mysqli_stmt_bind_param($stmt, "isi", $status, $username, $upgradeId);
 
@@ -60,22 +62,26 @@ switch ($action) {
         break;
 
     case 'new':
-        if (!$username || !isset($data['upgrade_id']) || !isset($data['status'])) {
-            echo json_encode(['status' => 'error', 'message' => 'Missing parameters']);
-            break;
+
+        $query = "INSERT INTO user_upgrades (username, upgrade_id, status) VALUES (?, ?, ?)";
+        $stmt = mysqli_prepare($con, $query);
+
+        $success = true;
+
+        // Insertamos los 13 upgrades
+        for ($i = 1; $i <= 13; $i++) {
+            $status = ($i == 1) ? 1 : 0; //La primera mejora debe de estar habilitada, las demas no
+            mysqli_stmt_bind_param($stmt, "sii", $username, $i, $status);
+            if (!mysqli_stmt_execute($stmt)) {
+                $success = false;
+                break;
+            }
         }
 
-        $upgradeId = (int)$data['upgrade_id'];
-        $status = (int)$data['status'];
-
-        $query = "INSERT INTO upgrades (username, upgrade_id, status) VALUES (?, ?, ?)";
-        $stmt = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($stmt, "sii", $username, $upgradeId, $status);
-
-        if (mysqli_stmt_execute($stmt)) {
-            echo json_encode(['status' => 'success', 'message' => 'Upgrade created']);
+        if ($success) {
+            echo json_encode(['status' => 'success', 'message' => 'All upgrades created']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Creation failed']);
+            echo json_encode(['status' => 'error', 'message' => 'Creation failed for some upgrades']);
         }
         break;
 
