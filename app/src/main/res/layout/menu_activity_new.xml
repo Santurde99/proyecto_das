@@ -9,7 +9,6 @@
     tools:context=".Menu_activity_new"
     tools:ignore="ExtraText">
 
-    <!-- CardView como fondo contenedor -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -28,7 +27,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- TextView con texto grande -->
         <TextView
             android:id="@+id/main_text"
             android:layout_width="wrap_content"
@@ -41,7 +39,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- EditText para usuario -->
         <EditText
             android:id="@+id/username"
             android:layout_width="0dp"
@@ -54,7 +51,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/main_text" />
 
-        <!-- EditText para contraseña -->
         <EditText
             android:id="@+id/password"
             android:layout_width="0dp"
@@ -67,7 +63,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/username" />
 
-        <!-- Botón de login -->
         <Button
             android:id="@+id/login"
             android:layout_width="0dp"
@@ -78,7 +73,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/password" />
 
-        <!-- Botón de registro -->
         <Button
             android:id="@+id/register"
             android:layout_width="0dp"

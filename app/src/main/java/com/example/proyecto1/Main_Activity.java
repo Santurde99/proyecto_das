@@ -54,7 +54,6 @@ public class Main_Activity extends AppCompatActivity {
     private float passive_multiplier = 1.0f;
     private float click_multiplier = 1.0f;
     private int notification_count = 0;
-    private String username;
 
     private static final int REQUEST_CODE = 1; // Código de solicitud
 
@@ -81,7 +80,6 @@ public class Main_Activity extends AppCompatActivity {
         this.click_multiplier = getIntent().getFloatExtra("click_multiplier", 0);
         this.passive_multiplier = getIntent().getFloatExtra("passive_multiplier", 0);
         int idle_gained = getIntent().getIntExtra("idle_points", 0);
-        this.username = getIntent().getStringExtra("username");
 
         if (idle_gained > 0) {
             Toast.makeText(this, getString(R.string.return_toast_1_1) + " "+idle_gained+" " + getString(R.string.return_toast_1_2), Toast.LENGTH_LONG).show();
@@ -142,7 +140,7 @@ public class Main_Activity extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Data_Load.getDL().save_upgrades(getApplicationContext(),lco,getIntent().getStringExtra("username")); //Guardar las mejoras
+                Data_Load.getDL().save_upgrades(getApplicationContext(),lco); //Guardar las mejoras
                 save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
             }
         });
@@ -152,7 +150,6 @@ public class Main_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Main_Activity.this, Options_Activity.class);
-                intent.putExtra("username",username);
                 startActivity(intent);
             }
         });
@@ -223,7 +220,7 @@ public class Main_Activity extends AppCompatActivity {
     private void save_stats(Context context) {
         OneTimeWorkRequest gs_save_request = new OneTimeWorkRequest.Builder(SaveGS_Worker.class)
                 .setInputData(new Data.Builder()
-                        .putString(SaveGS_Worker.KEY_USERNAME, getIntent().getStringExtra("username"))
+                        .putString(SaveGS_Worker.KEY_USERNAME, Data_Load.getDL().getUsername())
                         .putInt(SaveGS_Worker.KEY_POINTS, nuggets)
                         .putInt(SaveGS_Worker.KEY_CLICK_POINTS, click_points)
                         .putInt(SaveGS_Worker.KEY_PASSIVE_POINTS, passive_points)
@@ -264,7 +261,7 @@ public class Main_Activity extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.exit_diag_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Data_Load.getDL().save_upgrades(getApplicationContext(),lco,getIntent().getStringExtra("username")); //Guardar las mejoras
+                        Data_Load.getDL().save_upgrades(getApplicationContext(),lco); //Guardar las mejoras
                         save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
                         finishAffinity();
                         System.exit(0);

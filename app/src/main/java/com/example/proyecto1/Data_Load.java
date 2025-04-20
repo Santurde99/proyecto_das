@@ -27,6 +27,8 @@ public class Data_Load {
 
     private static Data_Load the_dataload;
     private final ArrayList<Generic_Upgrade> upgrade_list = new ArrayList<>();
+    private String username;
+    private String profilePicBase64;
 
     private Data_Load() {
     }
@@ -47,6 +49,15 @@ public class Data_Load {
         }
         return null;
     }
+
+    public void setUsername(String user){this.username = user;};
+
+    public String getUsername(){return this.username;};
+
+    public void setProfPic(String pic){this.profilePicBase64 = pic;};
+
+    public String getProfPic(){return this.profilePicBase64;};
+
 
     public void load_from_database(Context context, LifecycleOwner lifecycleOwner, String user_upgrades) {
         OneTimeWorkRequest loadUpgradesWorkRequest =
@@ -141,7 +152,7 @@ public class Data_Load {
                 });
     }
 
-    public void save_upgrades(Context context, LifecycleOwner lifecycleOwner, String username) {
+    public void save_upgrades(Context context, LifecycleOwner lifecycleOwner) {
         try {
             // Convertir upgrade_list a JSON
             JSONArray upgradesArray = new JSONArray();

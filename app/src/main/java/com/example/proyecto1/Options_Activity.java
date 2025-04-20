@@ -1,7 +1,5 @@
 package com.example.proyecto1;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,7 +27,6 @@ import com.example.proyecto1.workers.LoadProfilePic_Worker;
 
 public class Options_Activity extends AppCompatActivity {
 
-    private String username;
     private ImageButton profile_button;
 
     @Override
@@ -43,9 +40,7 @@ public class Options_Activity extends AppCompatActivity {
             return insets;
         });
 
-        this.username = getIntent().getStringExtra("username");
 
-        ImageButton reset_button = findViewById(R.id.reset_button);
         ImageButton back_button = findViewById(R.id.back_button);
         ImageButton instagram_button = findViewById(R.id.instagram_button);
         ImageButton twitter_button = findViewById(R.id.twitter_button);
@@ -54,10 +49,10 @@ public class Options_Activity extends AppCompatActivity {
         ImageButton english_button = findViewById(R.id.english_button);
         profile_button = findViewById(R.id.profile_button);
         TextView username_text = findViewById(R.id.user_text);
-        username_text.setText(this.username);
 
         // Cargar la foto de perfil al iniciar la actividad
         loadProfilePicture();
+        username_text.setText(Data_Load.getDL().getUsername());
 
         String currentLanguage = Locale.getDefault().getLanguage();
         if (currentLanguage.equals("en")){
@@ -72,13 +67,6 @@ public class Options_Activity extends AppCompatActivity {
             spanish_button.setAlpha(0.5f);
         }
 
-        reset_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDeleteDialog();
-            }
-        });
-
         back_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +78,6 @@ public class Options_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Options_Activity.this, Camera_Activity.class);
-                intent.putExtra("username",username);
                 startActivity(intent);
             }
         });
@@ -152,12 +139,9 @@ public class Options_Activity extends AppCompatActivity {
     }
 
     private void loadProfilePicture() {
-        if (username == null || username.isEmpty()) {
-            return;
-        }
 
         Data inputData = new Data.Builder()
-                .putString(LoadProfilePic_Worker.KEY_USERNAME, username)
+                .putString(LoadProfilePic_Worker.KEY_USERNAME, Data_Load.getDL().getUsername())
                 .build();
 
         OneTimeWorkRequest loadWorkRequest =
@@ -172,10 +156,10 @@ public class Options_Activity extends AppCompatActivity {
                     @Override
                     public void onChanged(WorkInfo workInfo) {
                         if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                            String imageBase64 = workInfo.getOutputData().getString(LoadProfilePic_Worker.KEY_IMAGE_DATA);
-                            if (imageBase64 != null && !imageBase64.isEmpty()) {
+                            if (Data_Load.getDL().getProfPic() != null){
                                 try {
-                                    byte[] imageBytes = Base64.decode(imageBase64, Base64.DEFAULT);
+                                    //Actualizamos imagen de perfil tomandola de DataLoad
+                                    byte[] imageBytes = Base64.decode(Data_Load.getDL().getProfPic(), Base64.DEFAULT);
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
                                     if (bitmap != null) {
                                         profile_button.setImageBitmap(bitmap);
@@ -187,48 +171,5 @@ public class Options_Activity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    private boolean deleteSave() {
-        boolean result = false;
-        try {
-            // Elimina la base de datos
-            result = deleteDatabase("database.db");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return result;
-    }
-
-    private void showDeleteDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.delete_diag_title))
-                .setMessage(getString(R.string.delete_diag_text))
-                .setPositiveButton(getString(R.string.delete_diag_yes), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        boolean isDeleted = deleteSave();
-                        // Muestra un mensaje al usuario
-                        if (isDeleted) {
-                            Toast.makeText(Options_Activity.this, getString(R.string.delete_toast), Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(Options_Activity.this, getString(R.string.err_delete_toast), Toast.LENGTH_SHORT).show();
-                        }
-                        finishAffinity();
-                    }
-                })
-                .setNegativeButton(getString(R.string.delete_diag_no), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                })
-                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        dialog.dismiss();
-                    }
-                })
-                .show();
     }
 }

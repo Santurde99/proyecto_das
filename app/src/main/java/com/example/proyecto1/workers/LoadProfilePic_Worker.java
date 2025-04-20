@@ -11,6 +11,8 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.example.proyecto1.Data_Load;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -131,13 +133,11 @@ public class LoadProfilePic_Worker extends Worker {
                 return Result.failure(createErrorOutput("Formato de imagen inválido"));
             }
 
-            // 11. Retornar éxito con datos
-            Data outputData = new Data.Builder()
-                    .putString(KEY_IMAGE_DATA, imageBase64)
-                    .build();
+            //Guardamos en Data_Load la foto de perfil para evitar limitaciones de peso de la clase Data
+            Data_Load.getDL().setProfPic(imageBase64);
 
             Log.d(TAG, "Worker completado con éxito");
-            return Result.success(outputData);
+            return Result.success();
 
         } catch (IOException e) {
             Log.e(TAG, "Error de conexión: " + e.getMessage(), e);

@@ -216,7 +216,8 @@ public class Menu_activity_new extends AppCompatActivity {
                             intent.putExtra("click_multiplier", load_click_multiplier);
                             intent.putExtra("passive_multiplier", load_passive_multiplier);
                             intent.putExtra("idle_points", idle_gained_points);
-                            intent.putExtra("username", this.username);
+
+                            Data_Load.getDL().setUsername(username);
 
                             // Iniciar la nueva actividad
                             startActivity(intent);
