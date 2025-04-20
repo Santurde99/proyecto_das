@@ -4,17 +4,21 @@ import com.example.proyecto1.workers.NewGS_Worker;
 import com.example.proyecto1.workers.NewUU_Worker;
 import com.example.proyecto1.workers.UserLogin_Worker;
 import com.example.proyecto1.workers.UserRegister_Worker;
+import com.example.proyecto1.workers.LoadUU_Worker;
+import com.example.proyecto1.workers.LoadGS_Worker;
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONException;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -51,9 +55,14 @@ public class Menu_activity_new extends AppCompatActivity {
     private float load_click_multiplier;
     private float load_passive_multiplier;
     private String load_date;
-    private Boolean ready;
     private ConstraintLayout layout;
     private int idle_gained_points;
+    private String username;
+
+
+    private String gs_data;
+    private String uu_data;
+
 
     private EditText user;
     private EditText pass;
@@ -62,7 +71,6 @@ public class Menu_activity_new extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        this.ready = false;
 
         super.onCreate(savedInstanceState);
         Language_Helper.loadLocale(this);
@@ -112,53 +120,115 @@ public class Menu_activity_new extends AppCompatActivity {
 
     }
 
-    private void login_user(){
+    private void login_user() {
         String username = user.getText().toString().trim();
         String password = pass.getText().toString().trim();
 
-        // Validar que no estén vacíos
-        if(username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Por favor complete ambos campos", Toast.LENGTH_SHORT).show();
             return;
         }
+        this.username = username;
 
-        // Crear datos para pasarle al worker
-        Data inputData = new Data.Builder()
-                .putString(UserLogin_Worker.KEY_USERNAME, username)
-                .putString(UserLogin_Worker.KEY_PASSWORD, password)
+        // Workers para el proceso de login
+        OneTimeWorkRequest loginRequest = new OneTimeWorkRequest.Builder(UserLogin_Worker.class)
+                .setInputData(new Data.Builder()
+                        .putString(UserLogin_Worker.KEY_USERNAME, username)
+                        .putString(UserLogin_Worker.KEY_PASSWORD, password)
+                        .build())
                 .build();
 
-        // Configurar la solicitud de trabajo
-        OneTimeWorkRequest loginRequest =
-                new OneTimeWorkRequest.Builder(UserLogin_Worker.class)
-                        .setInputData(inputData)
-                        .build();
+        OneTimeWorkRequest loadGSRequest = new OneTimeWorkRequest.Builder(LoadGS_Worker.class)
+                .setInputData(new Data.Builder()
+                        .putString(LoadGS_Worker.KEY_USERNAME, username)
+                        .build())
+                .build();
 
-        // Observar el resultado del Worker
+        OneTimeWorkRequest loadUURequest = new OneTimeWorkRequest.Builder(LoadUU_Worker.class)
+                .setInputData(new Data.Builder()
+                        .putString(LoadUU_Worker.KEY_USERNAME, username)
+                        .build())
+                .build();
+
+        // Ejecutamos los workers en cadena
+        WorkManager.getInstance(this)
+                .beginWith(loginRequest)
+                .then(loadGSRequest)
+                .then(loadUURequest)
+                .enqueue();
+
+        // Observador para el worker de login
         WorkManager.getInstance(this)
                 .getWorkInfoByIdLiveData(loginRequest.getId())
-                .observe(this, new Observer<WorkInfo>() {
-                    @Override
-                    public void onChanged(WorkInfo workInfo) {
-                        if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
-                            // Procesar el resultado
+                .observe(this, workInfo -> {
+                    if (workInfo != null) {
+                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                             Data outputData = workInfo.getOutputData();
-                            boolean loginValido = outputData.getBoolean(UserLogin_Worker.KEY_LOGIN_RESULT, false);
-
-                            if (loginValido) {
-                                Toast.makeText(Menu_activity_new.this, "Login exitoso", Toast.LENGTH_SHORT).show();
-                                // Aquí puedes navegar a otra actividad o realizar acciones post-login
-                            } else {
-                                Toast.makeText(Menu_activity_new.this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
-                            }
-                        } else if (workInfo != null && workInfo.getState() == WorkInfo.State.FAILED) {
-                            Toast.makeText(Menu_activity_new.this, "Error en el login", Toast.LENGTH_SHORT).show();
+                            boolean loginSuccess = outputData.getBoolean(UserLogin_Worker.KEY_LOGIN_RESULT, false);
+                            Log.d("LOGIN_WORKER", "Resultado del login: " + (loginSuccess ? "ÉXITO" : "FALLIDO"));
+                            Log.d("LOGIN_WORKER", "Datos completos: " + outputData.toString());
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            Log.e("LOGIN_WORKER", "Error en el worker de login");
+                            Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
 
-        // Encolar el trabajo
-        WorkManager.getInstance(this).enqueue(loginRequest);
+        // Observador para el worker de carga de estado del juego
+        WorkManager.getInstance(this)
+                .getWorkInfoByIdLiveData(loadGSRequest.getId())
+                .observe(this, workInfo -> {
+                    if (workInfo != null) {
+                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            Data outputData = workInfo.getOutputData();
+                            String upgradesData = outputData.getString(LoadGS_Worker.KEY_RESULT);
+                            Log.d("LOAD_GS_WORKER", "Estado del juego cargado correctamente");
+                            Log.d("LOAD_GS_WORKER", "Datos recibidos: " + upgradesData);
+                            this.gs_data = upgradesData;
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            Log.e("LOAD_GS_WORKER", "Error al cargar el estado del juego");
+                            Toast.makeText(this, "Error al cargar el estado del juego", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        // Observador para el worker de carga de upgrades
+        WorkManager.getInstance(this)
+                .getWorkInfoByIdLiveData(loadUURequest.getId())
+                .observe(this, workInfo -> {
+                    if (workInfo != null) {
+                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            Data outputData = workInfo.getOutputData();
+                            String upgradesData = outputData.getString(LoadUU_Worker.KEY_RESULT);
+                            Log.d("LOAD_UU_WORKER", "Upgrades cargados correctamente");
+                            Log.d("LOAD_UU_WORKER", "Datos de upgrades: " + upgradesData);
+                            this.uu_data = upgradesData;
+                            load_game();
+
+                            //Lanzamos intent a main
+                            // Crear un Intent para iniciar la nueva actividad
+                            Intent intent = new Intent(Menu_activity_new.this, Main_Activity.class);
+                            // Pasar datos a la nueva actividad
+                            intent.putExtra("points", load_points);
+                            intent.putExtra("date", load_date);
+                            intent.putExtra("click_points", load_click_points);
+                            intent.putExtra("passive_points", load_passive_points);
+                            intent.putExtra("click_multiplier", load_click_multiplier);
+                            intent.putExtra("passive_multiplier", load_passive_multiplier);
+                            intent.putExtra("idle_points", idle_gained_points);
+                            intent.putExtra("username", this.username);
+
+                            // Iniciar la nueva actividad
+                            startActivity(intent);
+                            // Destruir la actividad actual
+                            finish();
+
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            Log.e("LOAD_UU_WORKER", "Error al cargar los upgrades");
+                            Toast.makeText(this, "Error al cargar los upgrades", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private void register_user() {
@@ -221,7 +291,7 @@ public class Menu_activity_new extends AppCompatActivity {
                 .getWorkInfoByIdLiveData(registerRequest.getId())
                 .observe(this, workInfo -> {
                     if (workInfo == null) {
-                        Toast.makeText(this, "Error en el registro" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Error al generar los datos del usuario" , Toast.LENGTH_SHORT).show();
                     } else{
                         Toast.makeText(this, "Cuenta creada correctamente" , Toast.LENGTH_SHORT).show();
                     }
@@ -229,80 +299,61 @@ public class Menu_activity_new extends AppCompatActivity {
     }
 
 
-    private void load_game_state(Context context){
-        DbConnector connector = new DbConnector(context);
+    private void load_game() {
+        try {
+            // Parsear el JSON
+            JSONObject jsonObject = new JSONObject(this.gs_data);
+            JSONObject data = jsonObject.getJSONObject("data");
 
-        // Recorrer el cursor
-        try (Cursor cursor = connector.get_whole_table("points")) {
-            if (cursor != null && cursor.moveToFirst()) {
-                do {
-                    // Extraer los datos de cada columna
-                    this.load_points = cursor.getInt(cursor.getColumnIndexOrThrow("points"));
-                    this.load_date = cursor.getString(cursor.getColumnIndexOrThrow("date"));
-                    this.load_click_points = cursor.getInt(cursor.getColumnIndexOrThrow("click_points"));
-                    this.load_passive_points = cursor.getInt(cursor.getColumnIndexOrThrow("passive_points"));
-                    this.load_click_multiplier = cursor.getFloat(cursor.getColumnIndexOrThrow("click_multiplier"));
-                    this.load_passive_multiplier = cursor.getFloat(cursor.getColumnIndexOrThrow("passive_multiplier"));
+            // Extraer los valores del JSON
+            this.load_points = data.getInt("points");
+            this.load_click_points = data.getInt("click_points");
+            this.load_passive_points = data.getInt("passive_points");
+            this.load_click_multiplier = (float) data.getDouble("click_multiplier");
+            this.load_passive_multiplier = (float) data.getDouble("passive_multiplier");
+            this.load_date = data.getString("last_saved");
 
-                } while (cursor.moveToNext());
-            }
-        } catch (Exception e) {
-            // Maneja cualquier otra excepción que pueda ocurrir
-            Log.e("Error", "Ocurrió un error al cargar los puntos", e);
+            // Calcular puntos ganados en ausencia
+            add_afk_points();
+
+            Log.d("LOAD_GAME_STATE", "Datos cargados correctamente: " +
+                    "\nPuntos: " + load_points +
+                    "\nClick Points: " + load_click_points +
+                    "\nPassive Points: " + load_passive_points +
+                    "\nClick Multiplier: " + load_click_multiplier +
+                    "\nPassive Multiplier: " + load_passive_multiplier +
+                    "\nÚltima conexión: " + load_date +
+                    "\nPuntos ganados en idle: " + idle_gained_points);
+
+            Data_Load.getDL().load_from_database(this.getApplicationContext(), this,this.uu_data);
+
+        } catch (JSONException e) {
+            Log.e("LOAD_GAME_STATE", "Error al parsear JSON: " + e.getMessage());
+            Toast.makeText(this, "Error al cargar los datos del juego", Toast.LENGTH_SHORT).show();
+        } catch (Exception e){
+            Log.e("LOAD_GAME_STATE", "Error: " + e.getMessage());
         }
     }
 
-    private void first_start_stats(Context context){
-        DbConnector connector = new DbConnector(context);
-        try (SQLiteDatabase db = connector.getWritableDatabase()) {
 
-            //Creamos el primer archivo de guardado
-            int points = 0;
+    private void add_afk_points() {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+            LocalDateTime last_login = LocalDateTime.parse(this.load_date.trim(), formatter);
             LocalDateTime now = LocalDateTime.now();
-            String date_formated = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); // Formato ISO-860
 
-            this.load_points = points;
-            this.load_date = date_formated;
-            this.load_click_points = 1;
-            this.load_passive_points = 0;
-            this.load_click_multiplier = 1.0f;
-            this.load_passive_multiplier = 1.0f;
+            Duration duration = Duration.between(last_login, now);
+            long seconds_since_last_login = duration.getSeconds();
 
-            // Crear un ContentValues para almacenar los valores a actualizar
-            ContentValues values = new ContentValues();
-            values.put("points", points);
-            values.put("date",date_formated);
-            values.put("click_points", this.load_click_points);
-            values.put("passive_points", this.load_passive_points);
-            values.put("click_multiplier", this.load_click_multiplier);
-            values.put("passive_multiplier", this.load_passive_multiplier);
-            values.put("date", date_formated);
+            this.idle_gained_points = Math.round(seconds_since_last_login * ((this.load_passive_points * this.load_passive_multiplier) / 2));
+            this.load_points += this.idle_gained_points;
 
-
-            // Actualizar la fila correspondiente en la base de datos
-            long newRowId = db.insert("points",null, values);
-
-            // Verificar si la inserción fue exitosa
-            if (newRowId != -1) {
-                Log.d("Inserción", "Fila insertada con ID: " + newRowId);
-            } else {
-                Log.d("Inserción", "Error al insertar la fila con ID: " + newRowId);
-            }
-
-        } catch (SQLException e) {
-            // Manejar cualquier excepción de SQL
-            Log.e("Actualizacion", "Error al actualizar la base de datos", e);
+            Log.d("AFK_POINTS", "Puntos ganados: " + this.idle_gained_points);
+        } catch (Exception e) {
+            Log.e("DATE_ERROR", "Error al parsear fecha: " + e.getMessage(), e);
+            this.idle_gained_points = 0; // Valor por defecto si falla
         }
-    }
-
-    private void add_afk_points(){
-        LocalDateTime last_login = LocalDateTime.parse(this.load_date, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(last_login, now);
-        long seconds_since_last_login = duration.getSeconds();
-        this.idle_gained_points = Math.round(seconds_since_last_login + ((this.load_passive_points * this.load_passive_multiplier)/2));
-        this.load_points = this.load_points + this.idle_gained_points;
     }
 
     private void askForPermission() {

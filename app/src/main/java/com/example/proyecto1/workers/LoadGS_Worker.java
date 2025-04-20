@@ -1,7 +1,10 @@
 package com.example.proyecto1.workers;
 
 import android.content.Context;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
+import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import org.json.simple.JSONObject;
@@ -13,8 +16,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class LoadGS_Worker extends Worker {
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_STATUS = "status";
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_RESULT = "game_state_data";
 
     public LoadGS_Worker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -29,7 +32,7 @@ public class LoadGS_Worker extends Worker {
         }
 
         try {
-            URL url = new URL("http://tuserver.com/users_api.php");
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/game_state.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -45,14 +48,21 @@ public class LoadGS_Worker extends Worker {
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String response = in.readLine();
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null) {
+                    response.append(line);
+                }
                 in.close();
 
                 JSONParser parser = new JSONParser();
-                JSONObject responseJson = (JSONObject) parser.parse(response);
+                JSONObject responseJson = (JSONObject) parser.parse(response.toString());
 
-                if ("success".equals(responseJson.get(KEY_STATUS))) {
-                    return Result.success();
+                if ("success".equals(responseJson.get("status"))) {
+                    Data outputData = new Data.Builder()
+                            .putString(KEY_RESULT, responseJson.toJSONString())
+                            .build();
+                    return Result.success(outputData);
                 }
             }
             return Result.failure();

@@ -23,6 +23,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+
+import com.example.proyecto1.workers.SaveGS_Worker;
+import com.example.proyecto1.workers.UserLogin_Worker;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,9 +54,11 @@ public class Main_Activity extends AppCompatActivity {
     private float passive_multiplier = 1.0f;
     private float click_multiplier = 1.0f;
     private int notification_count = 0;
+    private String username;
 
     private static final int REQUEST_CODE = 1; // Código de solicitud
 
+    private LifecycleOwner lco;
 
     @SuppressLint("DiscouragedApi")
     @Override
@@ -62,7 +73,7 @@ public class Main_Activity extends AppCompatActivity {
             return insets;
         });
         Notification_Helper.createNotificationChannel(this);
-
+        this.lco = this;
         //Cargamos los datos
         this.nuggets = getIntent().getIntExtra("points", 0);
         this.click_points = getIntent().getIntExtra("click_points", 0);
@@ -70,6 +81,7 @@ public class Main_Activity extends AppCompatActivity {
         this.click_multiplier = getIntent().getFloatExtra("click_multiplier", 0);
         this.passive_multiplier = getIntent().getFloatExtra("passive_multiplier", 0);
         int idle_gained = getIntent().getIntExtra("idle_points", 0);
+        this.username = getIntent().getStringExtra("username");
 
         if (idle_gained > 0) {
             Toast.makeText(this, getString(R.string.return_toast_1_1) + " "+idle_gained+" " + getString(R.string.return_toast_1_2), Toast.LENGTH_LONG).show();
@@ -130,7 +142,7 @@ public class Main_Activity extends AppCompatActivity {
         save_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Data_Load.getDL().save_upgrades(getApplicationContext()); //Guardar las mejoras
+                Data_Load.getDL().save_upgrades(getApplicationContext(),lco,getIntent().getStringExtra("username")); //Guardar las mejoras
                 save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
             }
         });
@@ -140,6 +152,7 @@ public class Main_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Main_Activity.this, Options_Activity.class);
+                intent.putExtra("username",username);
                 startActivity(intent);
             }
         });
@@ -207,40 +220,41 @@ public class Main_Activity extends AppCompatActivity {
 
 
 
-    private void save_stats(Context context){
+    private void save_stats(Context context) {
+        OneTimeWorkRequest gs_save_request = new OneTimeWorkRequest.Builder(SaveGS_Worker.class)
+                .setInputData(new Data.Builder()
+                        .putString(SaveGS_Worker.KEY_USERNAME, getIntent().getStringExtra("username"))
+                        .putInt(SaveGS_Worker.KEY_POINTS, nuggets)
+                        .putInt(SaveGS_Worker.KEY_CLICK_POINTS, click_points)
+                        .putInt(SaveGS_Worker.KEY_PASSIVE_POINTS, passive_points)
+                        .putDouble(SaveGS_Worker.KEY_CLICK_MULTIPLIER, click_multiplier)
+                        .putDouble(SaveGS_Worker.KEY_PASSIVE_MULTIPLIER, passive_multiplier)
+                        .build())
+                .build();
 
-        DbConnector connector = new DbConnector(context);
-        try (SQLiteDatabase db = connector.getWritableDatabase()) {
+        // Obtener el WorkManager y encolar el trabajo
+        WorkManager workManager = WorkManager.getInstance(context);
+        workManager.enqueue(gs_save_request);
 
-            int id = 1; //De momento siempre se guarda en el mismo slot, el primero, no hay opcion de tener mas archivos de guardado
-
-            LocalDateTime now = LocalDateTime.now();
-            String date_formated = now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME); // Formato ISO-860
-
-            // Crear un ContentValues para almacenar los valores a actualizar
-            ContentValues values = new ContentValues();
-            values.put("points", this.nuggets);
-            values.put("click_points", this.click_points);
-            values.put("passive_points", this.passive_points);
-            values.put("click_multiplier", this.click_multiplier);
-            values.put("passive_multiplier", this.passive_multiplier);
-            values.put("date", date_formated);
-
-            // Actualizar la fila correspondiente en la base de datos
-            int rowsAffected = db.update("points", values, "id = ?", new String[]{String.valueOf(id)});
-
-            // Verificar si la actualización fue exitosa
-            if (rowsAffected > 0) {
-                Log.d("Actualizacion", "Fila actualizada con ID: " + id);
-                Toast.makeText(this,getString(R.string.saved_toast),Toast.LENGTH_SHORT).show();
-            } else {
-                Log.d("Actualizacion", "No se encontró ninguna fila con ID: " + id);
-            }
-        } catch (SQLException e) {
-            // Manejar cualquier excepción de SQL
-            Log.e("Actualizacion", "Error al actualizar la base de datos", e);
-        }
-        // Cerrar la base de datos
+        // Observar el resultado del trabajo
+        workManager.getWorkInfoByIdLiveData(gs_save_request.getId())
+                .observe(this, workInfo -> {
+                    if (workInfo != null && workInfo.getState().isFinished()) {
+                        if (workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            // Mostrar Toast de éxito
+                            runOnUiThread(() -> Toast.makeText(
+                                    Main_Activity.this,
+                                    "Datos guardados correctamente",
+                                    Toast.LENGTH_SHORT).show());
+                        } else if (workInfo.getState() == WorkInfo.State.FAILED) {
+                            // Mostrar Toast de error
+                            runOnUiThread(() -> Toast.makeText(
+                                    Main_Activity.this,
+                                    "Error al guardar los datos",
+                                    Toast.LENGTH_SHORT).show());
+                        }
+                    }
+                });
     }
 
     private void showExitDialog() {
@@ -250,7 +264,7 @@ public class Main_Activity extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.exit_diag_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Data_Load.getDL().save_upgrades(getApplicationContext()); //Guardar las mejoras
+                        Data_Load.getDL().save_upgrades(getApplicationContext(),lco,getIntent().getStringExtra("username")); //Guardar las mejoras
                         save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
                         finishAffinity();
                         System.exit(0);

@@ -12,41 +12,25 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class LoadUU_Worker extends Worker {
-    public static final String KEY_USERNAME = "username";
-    public static final String KEY_RESULT = "upgrades_data";
+public class LoadUpgrades_Worker extends Worker {
+    public static final String KEY_RESULT = "upgrades_list";
 
-    public LoadUU_Worker(@NonNull Context context, @NonNull WorkerParameters params) {
+    public LoadUpgrades_Worker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
     }
 
     @NonNull
     @Override
     public Result doWork() {
-        String username = getInputData().getString(KEY_USERNAME);
-        if (username == null) {
-            return Result.failure();
-        }
-
         try {
-            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/user_upgrades.php");
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/upgrades.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod("GET");
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            JSONObject json = new JSONObject();
-            json.put("action", "load");
-            json.put(KEY_USERNAME, username);
-
-            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-            out.write(json.toString());
-            out.close();
+            conn.setRequestProperty("Accept", "application/json");
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -67,9 +51,12 @@ public class LoadUU_Worker extends Worker {
                             .build();
                     return Result.success(outputData);
                 }
+            } else {
+                Log.e("LoadUpgrades_Worker", "HTTP error code: " + conn.getResponseCode());
             }
             return Result.failure();
         } catch (Exception e) {
+            Log.e("LoadUpgrades_Worker", "Error in doWork: " + e.getMessage(), e);
             return Result.failure();
         }
     }

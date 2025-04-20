@@ -3,10 +3,14 @@ package com.example.proyecto1;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.Locale;
 
@@ -15,8 +19,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkInfo;
+import androidx.work.WorkManager;
+
+import com.example.proyecto1.workers.LoadProfilePic_Worker;
 
 public class Options_Activity extends AppCompatActivity {
+
+    private String username;
+    private ImageButton profile_button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +43,7 @@ public class Options_Activity extends AppCompatActivity {
             return insets;
         });
 
+        this.username = getIntent().getStringExtra("username");
 
         ImageButton reset_button = findViewById(R.id.reset_button);
         ImageButton back_button = findViewById(R.id.back_button);
@@ -37,6 +52,12 @@ public class Options_Activity extends AppCompatActivity {
         ImageButton youtube_button = findViewById(R.id.youtube_button);
         ImageButton spanish_button = findViewById(R.id.spanish_button);
         ImageButton english_button = findViewById(R.id.english_button);
+        profile_button = findViewById(R.id.profile_button);
+        TextView username_text = findViewById(R.id.user_text);
+        username_text.setText(this.username);
+
+        // Cargar la foto de perfil al iniciar la actividad
+        loadProfilePicture();
 
         String currentLanguage = Locale.getDefault().getLanguage();
         if (currentLanguage.equals("en")){
@@ -62,6 +83,15 @@ public class Options_Activity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        profile_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Options_Activity.this, Camera_Activity.class);
+                intent.putExtra("username",username);
+                startActivity(intent);
             }
         });
 
@@ -101,7 +131,6 @@ public class Options_Activity extends AppCompatActivity {
             }
         });
 
-
         english_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,8 +142,51 @@ public class Options_Activity extends AppCompatActivity {
                 spanish_button.setAlpha(1.0f);
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Volver a cargar la foto de perfil cuando la actividad se reanuda (por ejemplo, al volver de Camera_Activity)
+        loadProfilePicture();
+    }
 
+    private void loadProfilePicture() {
+        if (username == null || username.isEmpty()) {
+            return;
+        }
+
+        Data inputData = new Data.Builder()
+                .putString(LoadProfilePic_Worker.KEY_USERNAME, username)
+                .build();
+
+        OneTimeWorkRequest loadWorkRequest =
+                new OneTimeWorkRequest.Builder(LoadProfilePic_Worker.class)
+                        .setInputData(inputData)
+                        .build();
+
+        WorkManager.getInstance(this).enqueue(loadWorkRequest);
+
+        WorkManager.getInstance(this).getWorkInfoByIdLiveData(loadWorkRequest.getId())
+                .observe(this, new Observer<WorkInfo>() {
+                    @Override
+                    public void onChanged(WorkInfo workInfo) {
+                        if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
+                            String imageBase64 = workInfo.getOutputData().getString(LoadProfilePic_Worker.KEY_IMAGE_DATA);
+                            if (imageBase64 != null && !imageBase64.isEmpty()) {
+                                try {
+                                    byte[] imageBytes = Base64.decode(imageBase64, Base64.DEFAULT);
+                                    Bitmap bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+                                    if (bitmap != null) {
+                                        profile_button.setImageBitmap(bitmap);
+                                    }
+                                } catch (IllegalArgumentException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                });
     }
 
     private boolean deleteSave() {

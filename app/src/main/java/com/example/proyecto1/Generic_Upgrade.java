@@ -8,8 +8,6 @@ public class Generic_Upgrade {
     private final String name;
     private final String description;
     protected int status; // 0 = sin desbloquear, 1 = disponible, 2 = comprado
-    private final int required_upgrades; //Cantidad de mejoras previas que tienen que desbloquearse
-    private int archived_upgrades; //Cantidad de mejoras obtenidas para el desbloqueo
     private final int image; //Path a su imagen
     protected int price; //Precio de la mejora
     private final int[] unlocks; // Ids de mejoras que desbloquea
@@ -19,15 +17,13 @@ public class Generic_Upgrade {
 
 
     //Constructora
-    public Generic_Upgrade(int id, String name, String desc, int kind, int upgrade_target,int status, int req_upg, int archived_upgrades, int img, int price, int upgrade_value, int[] unlocks){
+    public Generic_Upgrade(int id, String name, String desc, int kind, int upgrade_target,int status, int img, int price, int upgrade_value, int[] unlocks){
         this.id = id;
         this.name = name;
         this.description = desc;
         this.kind = kind;
         this.upgrade_target = upgrade_target;
         this.status = status;
-        this.required_upgrades = req_upg;
-        this.archived_upgrades = archived_upgrades;
         this.image = img;
         this.price = price;
         this.upgrade_value = upgrade_value;
@@ -55,9 +51,6 @@ public class Generic_Upgrade {
         return this.status;
     }
 
-    public int get_required_upgrades() {return this.required_upgrades;}
-
-    public int get_archieved_upgrades() {return this.archived_upgrades;}
 
     public int get_img(){
         return this.image;
@@ -89,15 +82,8 @@ public class Generic_Upgrade {
     
     //Comprueba si esta disponible para comprar, si se puede activar la activa
     public boolean unlock_upgrade(){
-        boolean is_available = false;
-        this.archived_upgrades++;
-        if ((this.archived_upgrades >= this.required_upgrades) && (status == 0)){
-            this.status = 1;
-            is_available = true;
-        } else if (status == 1) {
-            is_available = true;
-        }
-        return is_available;
+        this.status = 1;
+        return true;
     }
 
     //Comprueba si se puede comprar, si se puede comprar, la compra
@@ -105,6 +91,11 @@ public class Generic_Upgrade {
         boolean is_buyable = false;
         if (balance >= this.price){
             is_buyable = true;
+            Generic_Upgrade next = Data_Load.getDL().get_upgrade_by_id(this.id + 1);
+            if (next != null) {
+                next.unlock_upgrade();
+            }
+
         }
         return is_buyable;
 

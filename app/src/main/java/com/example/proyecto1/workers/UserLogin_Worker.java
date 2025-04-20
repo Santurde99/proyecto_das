@@ -79,11 +79,16 @@ public class UserLogin_Worker extends Worker {
                 // servidor devuelve {"valid": true/false}
                 boolean isValid = (Boolean) jsonResponse.get("valid");
 
-                return Result.success(
-                        new Data.Builder()
-                                .putBoolean(KEY_LOGIN_RESULT, isValid)
-                                .build()
-                );
+                if (isValid) {
+                    return Result.success(
+                            new Data.Builder()
+                                    .putBoolean(KEY_LOGIN_RESULT, isValid)
+                                    .build()
+                    );
+                }else{
+                    return Result.failure();
+                }
+
             }
         } catch (Exception e) {
             e.printStackTrace();

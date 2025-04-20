@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import java.io.BufferedReader;
@@ -14,9 +15,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SaveUU_Worker extends Worker {
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_UPGRADE_ID = "upgrade_id";
-    private static final String KEY_STATUS = "status";
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_UPGRADES_JSON = "upgrades_json";
 
     public SaveUU_Worker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -26,21 +26,23 @@ public class SaveUU_Worker extends Worker {
     @Override
     public Result doWork() {
         Data inputData = getInputData();
-        JSONObject json = new JSONObject();
-        json.put("action", "save");
-        json.put(KEY_USERNAME, inputData.getString(KEY_USERNAME));
-        json.put(KEY_UPGRADE_ID, inputData.getInt(KEY_UPGRADE_ID, 0));
-        json.put(KEY_STATUS, inputData.getInt(KEY_STATUS, 0));
+        String username = inputData.getString(KEY_USERNAME);
+        String upgradesJson = inputData.getString(KEY_UPGRADES_JSON);
 
         try {
-            URL url = new URL("http://tuserver.com/upgrades_api.php");
+            JSONObject requestJson = new JSONObject();
+            requestJson.put("action", "save");
+            requestJson.put(KEY_USERNAME, username);
+            requestJson.put("upgrades", upgradesJson);
+
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/user_upgrades.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
             OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
-            out.write(json.toString());
+            out.write(requestJson.toString());
             out.close();
 
             if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {

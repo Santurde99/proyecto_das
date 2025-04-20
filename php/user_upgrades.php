@@ -31,7 +31,7 @@ if (!$action || !$username) {
 switch ($action) {
     case 'load':
 
-        $query = "SELECT * FROM upgrades WHERE username = ?";
+        $query = "SELECT * FROM user_upgrades WHERE username = ?";
         $stmt = mysqli_prepare($con, $query);
         mysqli_stmt_bind_param($stmt, "s", $username);
         mysqli_stmt_execute($stmt);
@@ -46,18 +46,27 @@ switch ($action) {
         break;
 
     case 'save':
+        $upgrades = json_decode($data['upgrades'], true);
 
-        $upgradeId = (int)$data['upgrade_id'];
-        $status = (int)$data['status'];
-
+        $success = true;
         $query = "UPDATE user_upgrades SET status = ? WHERE username = ? AND upgrade_id = ?";
         $stmt = mysqli_prepare($con, $query);
-        mysqli_stmt_bind_param($stmt, "isi", $status, $username, $upgradeId);
 
-        if (mysqli_stmt_execute($stmt)) {
-            echo json_encode(['status' => 'success', 'message' => 'Upgrade saved']);
+        foreach ($upgrades as $upgrade) {
+            $upgradeId = (int)$upgrade['upgrade_id'];
+            $status = (int)$upgrade['status'];
+
+            mysqli_stmt_bind_param($stmt, "isi", $status, $username, $upgradeId);
+            if (!mysqli_stmt_execute($stmt)) {
+                $success = false;
+                break;
+            }
+        }
+
+        if ($success) {
+            echo json_encode(['status' => 'success', 'message' => 'All upgrades saved']);
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Save failed']);
+            echo json_encode(['status' => 'error', 'message' => 'Some upgrades failed to save']);
         }
         break;
 

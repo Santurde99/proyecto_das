@@ -14,12 +14,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class SaveGS_Worker extends Worker {
-    private static final String KEY_USERNAME = "username";
-    private static final String KEY_POINTS = "points";
-    private static final String KEY_CLICK_POINTS = "click_points";
-    private static final String KEY_PASSIVE_POINTS = "passive_points";
-    private static final String KEY_CLICK_MULTIPLIER = "click_multiplier";
-    private static final String KEY_PASSIVE_MULTIPLIER = "passive_multiplier";
+    public static final String KEY_USERNAME = "username";
+    public static final String KEY_POINTS = "points";
+    public static final String KEY_CLICK_POINTS = "click_points";
+    public static final String KEY_PASSIVE_POINTS = "passive_points";
+    public static final String KEY_CLICK_MULTIPLIER = "click_multiplier";
+    public static final String KEY_PASSIVE_MULTIPLIER = "passive_multiplier";
 
     public SaveGS_Worker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -39,7 +39,7 @@ public class SaveGS_Worker extends Worker {
         json.put(KEY_PASSIVE_MULTIPLIER, inputData.getDouble(KEY_PASSIVE_MULTIPLIER, 1.0));
 
         try {
-            URL url = new URL("http://tuserver.com/users_api.php");
+            URL url = new URL("http://ec2-51-44-167-78.eu-west-3.compute.amazonaws.com/agutierrez186/WEB/game_state.php");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
