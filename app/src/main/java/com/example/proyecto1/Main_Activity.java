@@ -2,17 +2,13 @@ package com.example.proyecto1;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.content.ContentValues;
+
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
+
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,7 +43,8 @@ public class Main_Activity extends AppCompatActivity {
     private ImageButton shop_button;
     private ImageButton save_button;
     private ImageButton options_button;
-    private int nuggets;
+    private ImageButton map_button;
+    private static int nuggets;
     private int click_points = 1;
     private Timer timer;
     private int passive_points = 0;
@@ -92,6 +89,7 @@ public class Main_Activity extends AppCompatActivity {
         shop_button = findViewById(R.id.shop_b);
         save_button = findViewById(R.id.save_button);
         options_button = findViewById(R.id.options_button);
+        map_button = findViewById(R.id.map_b);
 
 
         //-------------------------//Lógica de la ganancia pasiva//---------------------------
@@ -154,6 +152,16 @@ public class Main_Activity extends AppCompatActivity {
             }
         });
 
+        //------------------------------//Boton de mapa//--------------------------------------
+
+        map_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Main_Activity.this, Map_Activity.class);
+                startActivity(intent);
+            }
+        });
+
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -165,6 +173,11 @@ public class Main_Activity extends AppCompatActivity {
 
         // Registrar el callback con el OnBackPressedDispatcher
         getOnBackPressedDispatcher().addCallback(this, callback);
+    }
+
+
+    public static void add_nuggets(int amount){
+        nuggets = nuggets +amount;
     }
 
     @Override
