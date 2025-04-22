@@ -45,12 +45,13 @@ public class Main_Activity extends AppCompatActivity {
     private ImageButton options_button;
     private ImageButton map_button;
     private static int nuggets;
-    private int click_points = 1;
+    private static int click_points = 1;
     private Timer timer;
     private int passive_points = 0;
     private float passive_multiplier = 1.0f;
-    private float click_multiplier = 1.0f;
+    private static float click_multiplier = 1.0f;
     private int notification_count = 0;
+    private Context context;
 
     private static final int REQUEST_CODE = 1; // Código de solicitud
 
@@ -68,7 +69,7 @@ public class Main_Activity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        Notification_Helper.createNotificationChannel(this);
+        Notification_Helper.createNotificationChannels(this);
         this.lco = this;
         //Cargamos los datos
         this.nuggets = getIntent().getIntExtra("points", 0);
@@ -77,6 +78,8 @@ public class Main_Activity extends AppCompatActivity {
         this.click_multiplier = getIntent().getFloatExtra("click_multiplier", 0);
         this.passive_multiplier = getIntent().getFloatExtra("passive_multiplier", 0);
         int idle_gained = getIntent().getIntExtra("idle_points", 0);
+
+        context = this;
 
         if (idle_gained > 0) {
             Toast.makeText(this, getString(R.string.return_toast_1_1) + " "+idle_gained+" " + getString(R.string.return_toast_1_2), Toast.LENGTH_LONG).show();
@@ -106,6 +109,7 @@ public class Main_Activity extends AppCompatActivity {
                     public void run() {
                         nuggets = Math.round(nuggets + (passive_points * passive_multiplier));
                         nuggets_view.setText(String.valueOf(nuggets));
+                        Nuggets_Widget.actualizarWidgets(context);
                         if ((nuggets > 1000) &&(notification_count == 0)){
                             Notification_Helper.showNotification(Main_Activity.this,getString(R.string.notif_2_title),getString(R.string.notif_2_desc));
                             notification_count = notification_count +1;
@@ -176,8 +180,20 @@ public class Main_Activity extends AppCompatActivity {
     }
 
 
-    public static void add_nuggets(int amount){
+    //Este metodo se usa para añadir una cantidad concreta de puntos, se usa para
+    //Añadir 1000 puntos al llegar al punto marcado en el mapa
+    public static void add_fixed_nuggets(int amount){
         nuggets = nuggets +amount;
+    }
+
+    //Usado por el widget para checkear nuggets
+    public static int getNuggets() {
+        return nuggets;
+    }
+
+    // Este metodo simula un click y es usado por el widget
+    public static void simulate_click() {
+        nuggets = Math.round(nuggets + (click_points * click_multiplier));
     }
 
     @Override
@@ -274,8 +290,6 @@ public class Main_Activity extends AppCompatActivity {
                 .setPositiveButton(getString(R.string.exit_diag_yes), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Data_Load.getDL().save_upgrades(getApplicationContext(),lco); //Guardar las mejoras
-                        save_stats(getApplicationContext()); //Guardar la puntuacion y multiplicadores
                         finishAffinity();
                         System.exit(0);
                     }

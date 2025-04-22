@@ -144,7 +144,7 @@ public class Map_Activity extends AppCompatActivity {
             map.getOverlays().remove(marcadorObjetivo);
         }
 
-        puntoObjetivo = generarPuntoAleatorio(posicionActual, 400, 500);
+        puntoObjetivo = generarPuntoAleatorio(posicionActual, 200, 300);
 
         marcadorObjetivo = new Marker(map);
         marcadorObjetivo.setPosition(puntoObjetivo);

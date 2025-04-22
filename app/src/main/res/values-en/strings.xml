@@ -15,8 +15,8 @@
     <string name="notif_toast">We recommend enabling notifications</string>
 
     <string name="exit_diag_title">Leave mine</string>
-    <string name="exit_diag_text">Are you sure you want to exit?</string>
-    <string name="exit_diag_yes">Exit and Save</string>
+    <string name="exit_diag_text">Are you sure you want to exit without saving?</string>
+    <string name="exit_diag_yes">Exit without save</string>
     <string name="exit_diag_no">Not yet</string>
 
     <string name="delete_diag_title">Delete Game</string>
@@ -69,5 +69,32 @@
     <string name="u13_title">Mining Nanobots</string>
     <string name="u13_desc">(Repeatable) Small robots that work at the atomic level, collecting minerals tirelessly. (+100 nuggets per second)</string>
 
+    <string name="gps_notif1_title">Tracking target point</string>
+    <string name="gps_notif1_text">Moving towards the marked point on the map</string>
+    <string name="gps_notif2_title">You have reached the target point!</string>
+    <string name="gps_notif2_text">Congratulations, you have reached your destination. You receive 1000 nuggets.</string>
+    <string name="gps_notif3_title">GPS Disconnected</string>
+    <string name="gps_notif3_text">The service has stopped because the GPS was turned off</string>
+
+    <string name="img_load_error">Error loading the image</string>
+    <string name="no_image_toast">No image selected</string>
+    <string name="no_image_to_save">No image to save</string>
+    <string name="succes_change">Profile picture saved successfully</string>
+    <string name="perm_denyed">Permission denied</string>
+
+    <string name="btn_take_photo">Take photo</string>
+    <string name="btn_gale">Choose from gallery</string>
+    <string name="btn_save_photo">Save photo</string>
+
+    <string name="login_fill_fields">Please fill in both fields</string>
+    <string name="incorrect_login">Incorrect credentials</string>
+    <string name="gs_load_error">Error loading game state</string>
+    <string name="uu_load_error">Error loading upgrades</string>
+    <string name="acc_create_error">Error creating account</string>
+    <string name="acc_create_succes">Account created successfully</string>
+    <string name="load_parse_error">Error loading game data</string>
+
+    <string name="btn_login">Log in</string>
+    <string name="btn_register">Register</string>
 
 </resources>

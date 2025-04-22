@@ -85,7 +85,7 @@ public class Camera_Activity extends AppCompatActivity {
                                 imageViewProfile.setImageBitmap(bitmap);
                             } catch (IOException e) {
                                 e.printStackTrace();
-                                Toast.makeText(this, "Error al cargar la imagen", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, getString(R.string.img_load_error), Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Bundle extras = result.getData().getExtras();
@@ -103,13 +103,12 @@ public class Camera_Activity extends AppCompatActivity {
                         photoUri = uri;
                         imageViewProfile.setImageURI(uri);
                     } else {
-                        Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.no_image_toast), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void pickImage() {
-        // Usamos el nuevo método de selección de imágenes (Android 13+ no necesita permisos)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             launchImagePicker();
         } else {
@@ -164,7 +163,7 @@ public class Camera_Activity extends AppCompatActivity {
     private void saveProfilePicture() {
         // (Mantener tu implementación original)
         if (photoUri == null) {
-            Toast.makeText(this, "No hay imagen para guardar", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_image_to_save), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -183,7 +182,7 @@ public class Camera_Activity extends AppCompatActivity {
                 .observe(this, workInfo -> {
                     if (workInfo != null && workInfo.getState() == WorkInfo.State.SUCCEEDED) {
                         Toast.makeText(Camera_Activity.this,
-                                "Foto de perfil guardada con éxito",
+                                getString(R.string.succes_change),
                                 Toast.LENGTH_SHORT).show();
                         finish();
                     }
@@ -198,7 +197,7 @@ public class Camera_Activity extends AppCompatActivity {
         } else if (requestCode == 101 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             pickImage();
         } else {
-            Toast.makeText(this, "Permiso denegado", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.perm_denyed), Toast.LENGTH_SHORT).show();
         }
     }
 }

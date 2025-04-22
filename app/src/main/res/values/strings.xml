@@ -15,8 +15,8 @@
     <string name="notif_toast">Recomendamos habilitar las notificaciones</string>
 
     <string name="exit_diag_title">Salir de la mina</string>
-    <string name="exit_diag_text">¿Estás seguro de que quieres salir?</string>
-    <string name="exit_diag_yes">Salir y guardar</string>
+    <string name="exit_diag_text">¿Estás seguro de que quieres salir sin guardar?</string>
+    <string name="exit_diag_yes">Salir sin guardar</string>
     <string name="exit_diag_no">Aún no</string>
 
     <string name="delete_diag_title">Borrar partida</string>
@@ -68,6 +68,39 @@
 
     <string name="u13_title">Nanobots Mineros</string>
     <string name="u13_desc">(Repetible) Pequeños robots que trabajan a nivel atómico, recolectando minerales sin descanso. (+100 pepitas por segundo)</string>
+
+    <!-- Nuevos para la segunda entrega -->
+
+    <string name="gps_notif1_title">Siguiendo punto objetivo</string>
+    <string name="gps_notif1_text">Moviéndote hacia el punto marcado en el mapa</string>
+    <string name="gps_notif2_title">¡Has llegado al punto objetivo!</string>
+    <string name="gps_notif2_text">Felicidades, has alcanzado tu destino, recibes 1000 pepitas.</string>
+    <string name="gps_notif3_title">GPS Desconectado</string>
+    <string name="gps_notif3_text">El servicio se ha detenido porque el GPS se desactivó</string>
+
+    <string name="img_load_error">Error al cargar la imagen</string>
+    <string name="no_image_toast">No se seleccionó ninguna imagen </string>
+    <string name="no_image_to_save">No hay imagen para guardar</string>
+    <string name="succes_change">Foto de perfil guardada con éxito</string>
+    <string name="perm_denyed">Permiso denegado</string>
+
+    <string name="btn_take_photo">Tomar foto </string>
+    <string name="btn_gale">Tomar de la galeria</string>
+    <string name="btn_save_photo">Guardar foto</string>
+
+    <string name="login_fill_fields">Por favor complete ambos campos</string>
+    <string name="incorrect_login">Credenciales incorrectas</string>
+    <string name="gs_load_error">Error al cargar el estado del juego</string>
+    <string name="uu_load_error">Error al cargar las mejoras</string>
+    <string name="acc_create_error">Error al crear la cuenta</string>
+    <string name="acc_create_succes">Cuenta creada correctamente</string>
+    <string name="load_parse_error">Error al cargar los datos del juego</string>
+
+    <string name="btn_login">Iniciar sesión</string>
+    <string name="btn_register">Crear cuenta</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
 
 
 </resources>

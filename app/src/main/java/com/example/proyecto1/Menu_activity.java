@@ -7,18 +7,15 @@ import com.example.proyecto1.workers.UserRegister_Worker;
 import com.example.proyecto1.workers.LoadUU_Worker;
 import com.example.proyecto1.workers.LoadGS_Worker;
 import android.Manifest;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONException;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,7 +23,6 @@ import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkInfo;
@@ -35,7 +31,6 @@ import androidx.work.WorkManager;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
@@ -46,7 +41,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Menu_activity_new extends AppCompatActivity {
+public class Menu_activity extends AppCompatActivity {
 
     private ActivityResultLauncher<String> requestPermissionLauncher;
     private int load_points;
@@ -125,7 +120,7 @@ public class Menu_activity_new extends AppCompatActivity {
         String password = pass.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Por favor complete ambos campos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.login_fill_fields), Toast.LENGTH_SHORT).show();
             return;
         }
         this.username = username;
@@ -169,7 +164,7 @@ public class Menu_activity_new extends AppCompatActivity {
                             Log.d("LOGIN_WORKER", "Datos completos: " + outputData.toString());
                         } else if (workInfo.getState() == WorkInfo.State.FAILED) {
                             Log.e("LOGIN_WORKER", "Error en el worker de login");
-                            Toast.makeText(this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.incorrect_login), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -187,7 +182,6 @@ public class Menu_activity_new extends AppCompatActivity {
                             this.gs_data = upgradesData;
                         } else if (workInfo.getState() == WorkInfo.State.FAILED) {
                             Log.e("LOAD_GS_WORKER", "Error al cargar el estado del juego");
-                            Toast.makeText(this, "Error al cargar el estado del juego", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -207,7 +201,7 @@ public class Menu_activity_new extends AppCompatActivity {
 
                             //Lanzamos intent a main
                             // Crear un Intent para iniciar la nueva actividad
-                            Intent intent = new Intent(Menu_activity_new.this, Main_Activity.class);
+                            Intent intent = new Intent(Menu_activity.this, Main_Activity.class);
                             // Pasar datos a la nueva actividad
                             intent.putExtra("points", load_points);
                             intent.putExtra("date", load_date);
@@ -226,7 +220,6 @@ public class Menu_activity_new extends AppCompatActivity {
 
                         } else if (workInfo.getState() == WorkInfo.State.FAILED) {
                             Log.e("LOAD_UU_WORKER", "Error al cargar los upgrades");
-                            Toast.makeText(this, "Error al cargar los upgrades", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -237,7 +230,7 @@ public class Menu_activity_new extends AppCompatActivity {
         String password = pass.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Por favor complete ambos campos", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.login_fill_fields), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -276,7 +269,7 @@ public class Menu_activity_new extends AppCompatActivity {
                 .getWorkInfoByIdLiveData(registerRequest.getId())
                 .observe(this, workInfo -> {
                     if (workInfo == null) {
-                            Toast.makeText(this, "Error al crear la cuenta" , Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, getString(R.string.acc_create_error) , Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -284,7 +277,7 @@ public class Menu_activity_new extends AppCompatActivity {
                 .getWorkInfoByIdLiveData(newGSRequest.getId())
                 .observe(this, workInfo -> {
                     if (workInfo == null) {
-                        Toast.makeText(this, "Error al generar los datos nuevos del usuario" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.acc_create_error), Toast.LENGTH_SHORT).show();
                     }
                 });
 
@@ -294,7 +287,7 @@ public class Menu_activity_new extends AppCompatActivity {
                     if (workInfo == null) {
                         Toast.makeText(this, "Error al generar los datos del usuario" , Toast.LENGTH_SHORT).show();
                     } else{
-                        Toast.makeText(this, "Cuenta creada correctamente" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.acc_create_succes) , Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -330,7 +323,7 @@ public class Menu_activity_new extends AppCompatActivity {
 
         } catch (JSONException e) {
             Log.e("LOAD_GAME_STATE", "Error al parsear JSON: " + e.getMessage());
-            Toast.makeText(this, "Error al cargar los datos del juego", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.load_parse_error), Toast.LENGTH_SHORT).show();
         } catch (Exception e){
             Log.e("LOAD_GAME_STATE", "Error: " + e.getMessage());
         }
